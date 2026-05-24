@@ -45,11 +45,12 @@ jobs:
           python main.py --channel kids
           python main.py --channel facts
           
-      - name: Keep-alive commit
+      - name: Save data and keep alive
         if: always()
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git commit --allow-empty -m "Keep workflow alive"
+          git add data/ || true
+          git commit -m "Update logs and insights [skip ci]" || true
           git pull --rebase origin main || true
           git push
