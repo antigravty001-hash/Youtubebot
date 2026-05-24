@@ -41,6 +41,7 @@ jobs:
           YOUTUBE_FACTS_REFRESH_TOKEN: ${{ secrets.YOUTUBE_FACTS_REFRESH_TOKEN }}
         run: |
           python main.py --channel kids --lang tr --format shorts
+          python main.py --channel facts --lang tr --format shorts
           
       - name: Keep-alive commit
         if: always()
