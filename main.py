@@ -131,7 +131,6 @@ def produce_video(channel_type: str, language: str, format_type: str, dry_run: b
         )
         if video_id:
             video_url = f"https://youtube.com/watch?v={video_id}"
-            print(f"✅ Video Uploaded: {video_url}")
             
             # Upload Thumbnail
             if os.path.exists(thumb_path):

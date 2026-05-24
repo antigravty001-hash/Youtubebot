@@ -4,7 +4,10 @@ from google_auth_oauthlib.flow import InstalledAppFlow
 # You need to download your client_secrets.json from Google Cloud Console
 # and place it in the same directory as this script.
 CLIENT_SECRETS_FILE = "client_secrets.json"
-SCOPES = ['https://www.googleapis.com/auth/youtube.upload']
+SCOPES = [
+    'https://www.googleapis.com/auth/youtube.upload',
+    'https://www.googleapis.com/auth/youtube'
+]
 
 def main():
     if not os.path.exists(CLIENT_SECRETS_FILE):
