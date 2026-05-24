@@ -10,7 +10,9 @@ on:
 jobs:
   produce_and_upload:
     runs-on: ubuntu-latest
-    
+    permissions:
+      contents: write
+      
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v4

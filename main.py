@@ -80,13 +80,15 @@ def produce_video(channel_type: str, language: str, format_type: str, dry_run: b
     os.makedirs("temp_assets", exist_ok=True)
     voice_path = f"temp_assets/voice_{channel_type}_{language}.mp3"
     
+    voice_gender = chan_settings.get("voice_gender", "female")
     full_text = " ".join([scene.get("voiceover_text", "") for scene in script.get("scenes", [])])
-    voice_agent.generate_voiceover(full_text, channel_type, language, voice_path)
+    voice_agent.generate_voiceover(full_text, voice_gender, language, voice_path)
 
+    visual_style = chan_settings.get("visual_style", "cinematic")
     image_paths = []
     for idx, scene in enumerate(script.get("scenes", [])):
         visual_prompt = scene.get("visual_prompt", "nature")
-        img_path = visual_agent.get_image(visual_prompt, channel_type, idx)
+        img_path = visual_agent.get_image(visual_prompt, channel_type, idx, visual_style)
         if img_path:
             image_paths.append(img_path)
 
@@ -98,7 +100,8 @@ def produce_video(channel_type: str, language: str, format_type: str, dry_run: b
     editor = EditorAgent()
     os.makedirs("output", exist_ok=True)
     video_filename = f"output/{channel_type}_{language}_{format_type}.mp4"
-    editor.assemble_video(image_paths, voice_path, format_type, video_filename)
+    bgm_volume = float(chan_settings.get("bgm_volume", 0.1))
+    editor.assemble_video(image_paths, voice_path, format_type, video_filename, bgm_volume)
 
     # 5. Upload
     video_url = None

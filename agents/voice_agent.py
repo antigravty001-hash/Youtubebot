@@ -11,12 +11,13 @@ class VoiceAgent:
         communicate = edge_tts.Communicate(text, voice)
         await communicate.save(output_path)
 
-    def generate_voiceover(self, text: str, channel_type: str, language: str, output_path: str):
+    def generate_voiceover(self, text: str, voice_gender: str, language: str, output_path: str):
         """
         Generates TTS audio and saves it to output_path.
         """
-        voice_key = "kids_narrator" if channel_type == "kids" else "facts_narrator"
-        voice = VOICES[language][voice_key]
+        # default to female if invalid
+        gender = voice_gender if voice_gender in ["female", "male"] else "female"
+        voice = VOICES[language][gender]
         
         asyncio.run(self._generate(text, voice, output_path))
         return output_path

@@ -6,7 +6,7 @@ class EditorAgent:
     def __init__(self):
         pass
 
-    def assemble_video(self, images: list, audio_path: str, format_type: str, output_path: str):
+    def assemble_video(self, images: list, audio_path: str, format_type: str, output_path: str, bgm_volume: float = 0.1):
         """
         Combines images and voiceover into a video file.
         """
@@ -41,8 +41,8 @@ class EditorAgent:
             
             bgm_path = os.path.join(bgm_folder, random.choice(bgm_files))
             bgm_clip = AudioFileClip(bgm_path)
-            # Loop bgm to match video duration and reduce volume to 10%
-            bgm_clip = audio_loop(bgm_clip, duration=total_duration).fx(volumex, 0.1)
+            # Loop bgm to match video duration and apply user volume
+            bgm_clip = audio_loop(bgm_clip, duration=total_duration).fx(volumex, bgm_volume)
             
             # Mix voiceover and bgm
             final_audio = CompositeAudioClip([audio_clip, bgm_clip])

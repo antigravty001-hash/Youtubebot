@@ -29,12 +29,12 @@ LANGUAGES = ["en", "tr"]
 # Voices for edge-tts
 VOICES = {
     "en": {
-        "kids_narrator": "en-US-AriaNeural",
-        "facts_narrator": "en-US-GuyNeural"
+        "female": "en-US-AriaNeural",
+        "male": "en-US-GuyNeural"
     },
     "tr": {
-        "kids_narrator": "tr-TR-EmelNeural",
-        "facts_narrator": "tr-TR-AhmetNeural"
+        "female": "tr-TR-EmelNeural",
+        "male": "tr-TR-AhmetNeural"
     }
 }
 
