@@ -15,8 +15,10 @@ class VisualAgent:
         file_path = f"temp_assets/img_{index}.jpg"
 
         def use_pollinations():
-            safe_prompt = urllib.parse.quote(f"{visual_style} style, high quality, {prompt}")
-            url = f"https://image.pollinations.ai/prompt/{safe_prompt}?width=1080&height=1920&nologo=true"
+            enhanced_prompt = f"{visual_style} style, masterpiece, best quality, perfect anatomy, highly detailed, {prompt}"
+            safe_prompt = urllib.parse.quote(enhanced_prompt)
+            # Added model=flux and enhance=true for world-class anatomy and realism
+            url = f"https://image.pollinations.ai/prompt/{safe_prompt}?width=1080&height=1920&nologo=true&model=flux&enhance=true"
             try:
                 response = requests.get(url)
                 if response.status_code == 200:
