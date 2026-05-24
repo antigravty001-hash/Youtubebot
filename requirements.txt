@@ -5,5 +5,5 @@ google-generativeai
 edge-tts
 moviepy==1.0.3
 requests
-Pillow<10.0.0
+Pillow
 duckduckgo-search
