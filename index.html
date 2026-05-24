@@ -272,12 +272,12 @@
 
                 <!-- Quick Trigger -->
                 <div class="glass-panel p-6 rounded-2xl relative overflow-hidden group">
-                    <div class="absolute inset-0 bg-gradient-to-r from-error/10 to-transparent opacity-0 group-hover:opacity-100 transition duration-500"></div>
-                    <h2 class="text-lg font-bold text-white mb-2 flex items-center gap-2">
+                    <div class="absolute inset-0 bg-gradient-to-r from-error/10 to-transparent opacity-0 group-hover:opacity-100 transition duration-500 pointer-events-none"></div>
+                    <h2 class="text-lg font-bold text-white mb-2 flex items-center gap-2 relative z-10">
                         <i class="fa-solid fa-rocket text-error"></i> Manuel Ateşleme
                     </h2>
                     <p class="text-xs text-slate-400 mb-4">Ayarları buluta kaydettikten sonra saati beklemeden anında video üretimi başlatın.</p>
-                    <button onclick="triggerWorkflow()" class="w-full bg-error/20 border border-error/50 text-error hover:bg-error hover:text-white font-bold py-3 rounded-xl transition duration-300">
+                    <button onclick="triggerWorkflow()" class="w-full bg-error/20 border border-error/50 text-error hover:bg-error hover:text-white font-bold py-3 rounded-xl transition duration-300 relative z-10 cursor-pointer">
                         Hemen Üret
                     </button>
                     <p id="trigger-status" class="text-center text-xs text-error hidden mt-2">Komut gönderildi! 5-10 dk sürecektir.</p>
@@ -353,8 +353,16 @@
             if (res.status === 401) {
                 alert("GitHub Token geçersiz! Lütfen tekrar giriş yap.");
                 logout();
+                throw new Error("Unauthorized");
             }
-            return await res.json();
+            if (res.status === 204) {
+                return null;
+            }
+            const data = await res.json().catch(() => ({}));
+            if (!res.ok) {
+                throw new Error(data.message || `HTTP ${res.status}`);
+            }
+            return data;
         }
 
         async function fetchSettings() {
@@ -472,7 +480,11 @@
                     });
                     workflowSha = resWf.content.sha;
                     workflowContent = newWorkflowContent;
-                } catch (e) {}
+                } catch (e) {
+                    alert("Zamanlama Kaydedilemedi: " + e.message);
+                    btn.innerHTML = '<i class="fa-solid fa-cloud-arrow-up mr-2"></i> Senkronize Et';
+                    return;
+                }
             }
 
             btn.innerHTML = '<i class="fa-solid fa-cloud-arrow-up mr-2"></i> Senkronize Et';
