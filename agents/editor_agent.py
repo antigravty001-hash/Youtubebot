@@ -6,7 +6,7 @@ class EditorAgent:
     def __init__(self):
         pass
 
-    def assemble_video(self, images: list, audio_path: str, format_type: str, output_path: str, bgm_volume: float = 0.1):
+    def assemble_video(self, images: list, audio_path: str, format_type: str, output_path: str, bgm_volume: float = 0.1, channel_type: str = "kids"):
         """
         Combines images and voiceover into a video file.
         """
@@ -31,8 +31,8 @@ class EditorAgent:
         final_video = concatenate_videoclips(clips, method="compose")
         
         # Add background music if available
-        bgm_folder = "bgm"
-        bgm_files = [f for f in os.listdir(bgm_folder) if f.endswith(".mp3")] if os.path.exists(bgm_folder) else []
+        bgm_folder = f"bgm/{channel_type}"
+        bgm_files = [f for f in os.listdir(bgm_folder) if f.endswith((".mp3", ".m4a", ".webm"))] if os.path.exists(bgm_folder) else []
         
         if bgm_files:
             import random

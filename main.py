@@ -105,7 +105,7 @@ def produce_video(channel_type: str, language: str, format_type: str, dry_run: b
     os.makedirs("output", exist_ok=True)
     video_filename = f"output/{channel_type}_{language}_{format_type}.mp4"
     bgm_volume = float(chan_settings.get("bgm_volume", 0.1))
-    editor.assemble_video(image_paths, voice_path, format_type, video_filename, bgm_volume)
+    editor.assemble_video(image_paths, voice_path, format_type, video_filename, bgm_volume, channel_type)
 
     # 5. Upload
     video_url = None
