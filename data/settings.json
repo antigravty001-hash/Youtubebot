@@ -2,6 +2,9 @@
   "kids": {
     "language": "tr",
     "format": "shorts",
+    "visual_style": "cute cartoon",
+    "voice_gender": "female",
+    "bgm_volume": 0.1,
     "topic": "auto",
     "is_series": false,
     "series_episode": 1
@@ -9,6 +12,9 @@
   "facts": {
     "language": "tr",
     "format": "shorts",
+    "visual_style": "cinematic",
+    "voice_gender": "male",
+    "bgm_volume": 0.1,
     "topic": "auto",
     "is_series": false,
     "series_episode": 1
