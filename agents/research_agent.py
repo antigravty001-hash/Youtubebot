@@ -21,6 +21,21 @@ class ResearchAgent:
         videos in the niche and extracts the title of a viral video as inspiration.
         """
         query_list = self.queries.get(channel_type, {}).get(language, ["trending stories"])
+        
+        # Integrate Data Scientist Insights
+        try:
+            import json
+            with open("data/insights.json", "r", encoding="utf-8") as f:
+                insights = json.load(f)
+                if channel_type in insights:
+                    top_concepts = insights[channel_type].get("top_performing_concepts", [])
+                    if top_concepts:
+                        print(f"[Trend Agent] Boosting search with top historical concepts: {top_concepts}")
+                        # We heavily weight historical successes (50% chance to search based on a past successful video title)
+                        query_list.extend(top_concepts * 2)
+        except Exception:
+            pass
+
         query = random.choice(query_list)
         
         try:

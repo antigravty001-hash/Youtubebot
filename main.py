@@ -61,6 +61,10 @@ def produce_video(channel_type: str, language: str, format_type: str, dry_run: b
     # 1. Research / Topic Selection
     print("1. Determining topic...")
     if topic_setting == "auto":
+        from agents.data_scientist_agent import DataScientistAgent
+        ds = DataScientistAgent()
+        ds.analyze_channel(channel_type)
+        
         researcher = ResearchAgent()
         topic = researcher.get_topic(channel_type, language)
     else:
@@ -99,10 +103,16 @@ def produce_video(channel_type: str, language: str, format_type: str, dry_run: b
     if not image_paths:
         raise Exception("Failed to get any images. Aborting.")
 
+    # Generate Thumbnail
+    from agents.thumbnail_agent import ThumbnailAgent
+    thumb_agent = ThumbnailAgent()
+    os.makedirs("output", exist_ok=True)
+    thumb_path = f"output/{channel_type}_{language}_{format_type}_thumbnail.jpg"
+    thumb_agent.create_thumbnail(image_paths[0], script.get("title", "İnanılmaz!"), thumb_path)
+
     # 4. Assembly
     print("4. Assembling video...")
     editor = EditorAgent()
-    os.makedirs("output", exist_ok=True)
     video_filename = f"output/{channel_type}_{language}_{format_type}.mp4"
     bgm_volume = float(chan_settings.get("bgm_volume", 0.1))
     editor.assemble_video(image_paths, voice_path, format_type, video_filename, bgm_volume, channel_type)
@@ -122,6 +132,11 @@ def produce_video(channel_type: str, language: str, format_type: str, dry_run: b
         if video_id:
             video_url = f"https://youtube.com/watch?v={video_id}"
             print(f"✅ Video Uploaded: {video_url}")
+            
+            # Upload Thumbnail
+            if os.path.exists(thumb_path):
+                print("5b. Uploading Thumbnail...")
+                uploader.set_thumbnail(video_id, thumb_path, channel_type)
     else:
         print("5. Dry run enabled. Skipping upload.")
         video_url = "dry_run_no_url"

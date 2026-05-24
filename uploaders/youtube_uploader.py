@@ -54,3 +54,20 @@ class YouTubeUploader:
         except Exception as e:
             print(f"❌ Upload failed: {e}")
             return None
+
+    def set_thumbnail(self, video_id: str, thumbnail_path: str, channel_type: str):
+        if not CHANNELS[channel_type]["refresh_token"]:
+            return False
+            
+        youtube = self.get_service(channel_type)
+        try:
+            request = youtube.thumbnails().set(
+                videoId=video_id,
+                media_body=MediaFileUpload(thumbnail_path)
+            )
+            request.execute()
+            print(f"✅ Thumbnail Uploaded for Video ID: {video_id}")
+            return True
+        except Exception as e:
+            print(f"❌ Thumbnail upload failed: {e}")
+            return False
