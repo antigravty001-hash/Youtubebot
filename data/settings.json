@@ -1,8 +1,8 @@
 {
   "kids": {
     "language": "tr",
-    "format": "shorts",
-    "visual_style": "cute cartoon",
+    "format": "long",
+    "visual_style": "watercolor illustration",
     "voice_gender": "female",
     "bgm_volume": 0.1,
     "topic": "auto",
@@ -11,8 +11,8 @@
   },
   "facts": {
     "language": "tr",
-    "format": "shorts",
-    "visual_style": "cinematic",
+    "format": "long",
+    "visual_style": "vintage documentary",
     "voice_gender": "male",
     "bgm_volume": 0.1,
     "topic": "auto",
