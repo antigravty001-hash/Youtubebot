@@ -1,28 +1,46 @@
-from duckduckgo_search import DDGS
+from youtubesearchpython import VideosSearch
 import random
-from config.settings import THEMES
 
 class ResearchAgent:
     def __init__(self):
-        pass
+        # Niche queries to scan for viral concepts
+        self.queries = {
+            "kids": {
+                "tr": ["çocuk masalları", "eğitici animasyon çocuk", "çocuklar için hikaye", "çocuk şarkıları hikayeli"],
+                "en": ["bedtime stories for kids", "kids educational animation", "fun kids stories", "moral stories for kids"]
+            },
+            "facts": {
+                "tr": ["ilginç tarihi gerçekler", "az bilinen gerçekler", "tarihin sırları", "dünyanın en tuhaf olayları", "uzay hakkında şaşırtıcı bilgiler"],
+                "en": ["weird history facts", "mind blowing facts", "unsolved historical mysteries", "crazy space facts", "unknown animal facts"]
+            }
+        }
 
     def get_topic(self, channel_type: str, language: str) -> str:
         """
-        Picks a base theme and does a quick web search to find a trending sub-topic.
+        Acts as a Real-Time Trend Tracker. Searches YouTube for highly relevant and popular
+        videos in the niche and extracts the title of a viral video as inspiration.
         """
-        base_theme = random.choice(THEMES[channel_type])
+        query_list = self.queries.get(channel_type, {}).get(language, ["trending stories"])
+        query = random.choice(query_list)
         
         try:
-            # Simple DDG search to find recent trends related to the base theme
-            search_query = f"latest {base_theme}" if language == "en" else f"en yeni {base_theme} haberleri"
-            results = list(DDGS().text(search_query, max_results=3))
+            print(f"[Trend Agent] Scanning YouTube for niche: '{query}'...")
+            videos_search = VideosSearch(query, limit=10, region="TR" if language=="tr" else "US")
+            results = videos_search.result()
             
-            if results:
-                # Pick the first result's title as inspiration
-                trend_inspiration = results[0]['title']
-                return f"Theme: {base_theme}. Inspiration from web: {trend_inspiration}"
-            else:
-                return base_theme
+            if results and 'result' in results:
+                valid_videos = results['result']
+                if valid_videos:
+                    # YouTube relevance algorithm already puts highly successful/viral videos at the top.
+                    # We pick one of the top 3 to maintain variety but guarantee a proven concept.
+                    top_video = random.choice(valid_videos[:3])
+                    title = top_video.get('title', query)
+                    views = top_video.get('viewCount', {}).get('short', 'Unknown views')
+                    
+                    print(f"[Trend Agent] 🎯 Found Viral Concept: '{title}' ({views})")
+                    return f"VIRAL YOUTUBE CONCEPT: {title}"
+                    
+            return f"Base Concept: {query}" # Fallback
         except Exception as e:
-            print(f"Search failed, falling back to base theme: {e}")
-            return base_theme
+            print(f"[Trend Agent] Search failed: {e}")
+            return f"Base Concept: {query}" # Fallback

@@ -18,9 +18,13 @@ class WriterAgent:
         prompt = f"""
         Write a video script for a YouTube {format_type}.
         Channel type: {channel_type} (kids cartoon/story OR adult facts/history).
-        Topic/Inspiration: {topic}
         Language: {language.upper()}
         Approximate duration: {duration}
+
+        TOPIC/INSPIRATION: {topic}
+        
+        CRITICAL INSTRUCTION: If the TOPIC/INSPIRATION is a "VIRAL YOUTUBE CONCEPT" (e.g. a title of a highly viewed video like 'Şekerin Zararları' or 'Unsolved Mysteries'), DO NOT just copy it. Instead, extract the CORE IDEA that made it viral, and write a COMPLETELY ORIGINAL, unique, and engaging script based on that same viral core idea. Hook the viewer in the first 3 seconds!
+
 
         You MUST respond ONLY with a valid JSON object. Do not use markdown code blocks like ```json, just raw JSON.
         Format:
