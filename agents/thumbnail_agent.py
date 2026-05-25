@@ -8,7 +8,12 @@ class ThumbnailAgent:
     def create_thumbnail(self, base_image_path: str, title: str, output_path: str):
         print("[Thumbnail Agent] Creating highly clickable thumbnail...")
         try:
-            img = Image.open(base_image_path)
+            try:
+                img = Image.open(base_image_path)
+            except Exception:
+                # Fallback to black if base_image_path is missing or a video
+                img = Image.new("RGB", (1280, 720), color="black")
+                
             # Default YouTube horizontal format 1280x720
             img = img.resize((1280, 720))
             

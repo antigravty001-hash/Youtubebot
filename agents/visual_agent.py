@@ -27,7 +27,7 @@ class VisualAgent:
             import time
             for attempt in range(3):
                 try:
-                    response = requests.get(url, timeout=30)
+                    response = requests.get(url, timeout=12)
                     if response.status_code == 200:
                         with open(file_path, 'wb') as f:
                             f.write(response.content)

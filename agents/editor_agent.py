@@ -123,12 +123,16 @@ class EditorAgent:
                     w, h = top_clip.size
                     top_clip = crop(top_clip, width=half_res[0], height=half_res[1], x_center=w/2)
                 else:
-                    from moviepy.editor import ImageClip
-                    top_clip = ImageClip(media).set_duration(duration_per_image)
-                    top_clip = top_clip.resize(height=half_res[1])
-                    top_clip = top_clip.resize(lambda t: 1 + 0.1 * (t / duration_per_image))
-                    top_clip = top_clip.set_position(('center', 'center'))
-                    top_clip = CompositeVideoClip([top_clip], size=half_res)
+                    from moviepy.editor import ImageClip, ColorClip
+                    try:
+                        top_clip = ImageClip(media).set_duration(duration_per_image)
+                        top_clip = top_clip.resize(height=half_res[1])
+                        top_clip = top_clip.resize(lambda t: 1 + 0.1 * (t / duration_per_image))
+                        top_clip = top_clip.set_position(('center', 'center'))
+                        top_clip = CompositeVideoClip([top_clip], size=half_res)
+                    except Exception as e:
+                        print(f"Image load failed for {media}, using black screen: {e}")
+                        top_clip = ColorClip(size=half_res, color=(0,0,0)).set_duration(duration_per_image)
                 
                 # --- BOTTOM HALF (Satisfying Video) ---
                 if bg_full_clip:
