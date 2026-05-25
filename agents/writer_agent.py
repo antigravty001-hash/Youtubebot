@@ -13,13 +13,16 @@ class WriterAgent:
         """
         Uses Gemini to generate a video script in JSON format.
         """
-        duration = "45 seconds" if format_type == "shorts" else "3 minutes"
-        
+        if format_type == "shorts":
+            duration_instruction = "Approximate duration: 45 seconds. CRITICAL RULE: Your ENTIRE script (voiceover_text combined) MUST NOT exceed 100 words! If it is longer, YouTube will reject it as a Short."
+        else:
+            duration_instruction = "Approximate duration: 3 minutes. CRITICAL RULE: Aim for around 400-500 words for the voiceover."
+            
         prompt = f"""
         Write a video script for a YouTube {format_type}.
         Channel type: {channel_type} (kids cartoon/story OR adult facts/history).
         Language: {language.upper()}
-        Approximate duration: {duration}
+        {duration_instruction}
 
         TOPIC/INSPIRATION: {topic}
         
