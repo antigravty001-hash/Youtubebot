@@ -29,7 +29,8 @@ class WriterAgent:
         As an expert YouTube marketer, silently brainstorm 3 totally different "Hooks" (the first 3 seconds of the script). Evaluate which of the 3 hooks will have the absolute highest Retention and CTR (Click-Through Rate) based on human psychology. Then, write the ENTIRE SCRIPT using ONLY that WINNING hook. Hook the viewer instantly!
 
         DIRECTOR QUALITY CONTROL:
-        Before outputting, review your script as a tough Hollywood Director. Rate it out of 10. If the pacing is slow or the visual prompts are boring, rewrite the script internally to be faster, more engaging, and with highly cinematic visual prompts. Ensure the final output is 10/10 quality.
+        Before outputting, SILENTLY review your script as a tough Hollywood Director. Rate it out of 10 internally. If the pacing is slow or the visual prompts are boring, rewrite the script internally to be faster and more engaging.
+        DO NOT OUTPUT YOUR REVIEW, THOUGHTS, OR ANY TEXT. YOUR ENTIRE RESPONSE MUST BE ONLY THE RAW JSON OBJECT.
         
         CRITICAL TTS RULE: The 'voiceover_text' MUST be plain, grammatically correct text. DO NOT use emojis. DO NOT use markdown like ** or *. DO NOT use sound effects like "şşş", "hmm", "ahaha", "woohoo" because the AI voice will mispronounce them or spell them out. Just use plain words.
 
