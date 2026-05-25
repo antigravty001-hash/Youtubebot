@@ -69,15 +69,4 @@ class WriterAgent:
             return json.loads(text.strip())
         except Exception as e:
             print(f"Error generating script: {e}")
-            # Fallback script
-            return {
-                "title": "Amazing Video",
-                "description": "Check this out! #shorts",
-                "tags": ["video"],
-                "scenes": [
-                    {
-                        "visual_prompt": "nature landscape",
-                        "voiceover_text": "Welcome to an amazing new video." if language == "en" else "Harika bir videoya hoş geldiniz."
-                    }
-                ]
-            }
+            raise Exception("Gemini API failed to generate script. Aborting production to prevent dummy video upload.")
