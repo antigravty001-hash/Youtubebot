@@ -463,9 +463,9 @@
                     let trHour = parseInt(timeVal.split(':')[0]);
                     let utcHour = (trHour - 3 + 24) % 24; 
                     let count = 0;
-                    newWorkflowContent = newWorkflowContent.replace(/- cron: '0 \d+ \* \* \*'/g, (match) => {
+                    newWorkflowContent = newWorkflowContent.replace(/- cron: '\d+ \d+ \* \* \*'/g, (match) => {
                         count++;
-                        return count === i ? `- cron: '0 ${utcHour} * * *'` : match;
+                        return count === i ? `- cron: '14 ${utcHour} * * *'` : match;
                     });
                 }
             }
