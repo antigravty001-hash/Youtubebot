@@ -1,5 +1,23 @@
 [
   {
+    "timestamp": "2026-05-25T10:17:40.041034",
+    "channel": "facts",
+    "language": "tr",
+    "format": "shorts",
+    "status": "success",
+    "video_url": "https://youtube.com/watch?v=JjwoEYbXnBo",
+    "error_message": null
+  },
+  {
+    "timestamp": "2026-05-25T10:05:10.706252",
+    "channel": "kids",
+    "language": "tr",
+    "format": "shorts",
+    "status": "success",
+    "video_url": "https://youtube.com/watch?v=HnQ93iL_QH4",
+    "error_message": null
+  },
+  {
     "timestamp": "2026-05-25T09:42:59.405129",
     "channel": "facts",
     "language": "tr",
