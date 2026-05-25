@@ -42,7 +42,6 @@ jobs:
           YOUTUBE_KIDS_REFRESH_TOKEN: ${{ secrets.YOUTUBE_KIDS_REFRESH_TOKEN }}
           YOUTUBE_FACTS_REFRESH_TOKEN: ${{ secrets.YOUTUBE_FACTS_REFRESH_TOKEN }}
         run: |
-          python main.py --channel kids
           python main.py --channel facts
           
       - name: Upload Videos as Artifacts
