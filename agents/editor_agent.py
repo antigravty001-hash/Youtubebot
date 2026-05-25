@@ -6,42 +6,152 @@ class EditorAgent:
     def __init__(self):
         pass
 
+    def download_satisfying_bg(self):
+        import subprocess
+        import random
+        import glob
+        
+        # Clean up old bg videos to save space
+        old_files = glob.glob("temp_assets/bg_vid.*")
+        for f in old_files:
+            try:
+                os.remove(f)
+            except:
+                pass
+                
+        queries = ["gta 5 parkour shorts", "minecraft parkour shorts", "kinetic sand satisfying shorts"]
+        query = random.choice(queries)
+        print(f"Downloading background video for query: {query}")
+        
+        try:
+            cmd = [
+                "yt-dlp",
+                f"ytsearch1:{query}",
+                "-f", "bestvideo[height<=1080][ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]",
+                "--max-downloads", "1",
+                "--match-filter", "duration < 120",
+                "-o", "temp_assets/bg_vid.%(ext)s"
+            ]
+            subprocess.run(cmd, check=True)
+            files = glob.glob("temp_assets/bg_vid.*")
+            if files:
+                return files[0]
+        except Exception as e:
+            print(f"Failed to download bg video: {e}")
+        return None
+
     def assemble_video(self, images: list, audio_paths: list, format_type: str, output_path: str, bgm_volume: float = 0.1, channel_type: str = "kids"):
         """
-        Combines images and voiceover into a video file perfectly synced per scene.
+        Combines images, voiceover, satisfying background, and subtitles into a TikTok-style split screen video.
         """
         resolution = (FORMATS[format_type]["width"], FORMATS[format_type]["height"])
 
-        from moviepy.editor import VideoFileClip, CompositeVideoClip, AudioFileClip, concatenate_videoclips
-        from moviepy.video.fx.all import crop
+        from moviepy.editor import VideoFileClip, CompositeVideoClip, AudioFileClip, concatenate_videoclips, TextClip, clips_array
+        from moviepy.video.fx.all import crop, resize
+        from moviepy.video.tools.subtitles import SubtitlesClip
+        
+        # Determine half-screen resolution for top and bottom
+        half_res = (resolution[0], resolution[1] // 2)
+
+        # 1. Download Background Video for Bottom Half
+        bg_vid_path = self.download_satisfying_bg()
+        bg_full_clip = None
+        if bg_vid_path:
+            try:
+                bg_full_clip = VideoFileClip(bg_vid_path).without_audio()
+                # Ensure it fills the half screen
+                bg_full_clip = bg_full_clip.resize(height=half_res[1])
+                w, h = bg_full_clip.size
+                bg_full_clip = crop(bg_full_clip, width=half_res[0], height=half_res[1], x_center=w/2)
+            except Exception as e:
+                print(f"Error loading background video: {e}")
+                bg_full_clip = None
+
+        # --- DOWNLOAD WHOOSH SFX ---
+        whoosh_path = "temp_assets/whoosh.m4a"
+        if not os.path.exists(whoosh_path):
+            import subprocess
+            try:
+                print("Downloading whoosh sound effect...")
+                subprocess.run(["yt-dlp", "ytsearch1:whoosh transition sound effect short", "-f", "bestaudio", "--max-downloads", "1", "-o", whoosh_path], check=True)
+            except Exception as e:
+                print(f"Failed to download whoosh: {e}")
 
         clips = []
-        for media, aud in zip(images, audio_paths):
+        for idx, (media, aud) in enumerate(zip(images, audio_paths)):
             try:
+                from moviepy.editor import CompositeAudioClip
                 audio_clip = AudioFileClip(aud)
+                
+                # --- ADD WHOOSH SFX ---
+                if idx > 0 and os.path.exists(whoosh_path):
+                    try:
+                        whoosh = AudioFileClip(whoosh_path)
+                        if whoosh.duration > 1:
+                            whoosh = whoosh.subclip(0, 1) # Keep it short
+                        from moviepy.audio.fx.all import volumex
+                        whoosh = whoosh.fx(volumex, 0.5) # Lower volume
+                        audio_clip = CompositeAudioClip([audio_clip, whoosh])
+                    except:
+                        pass
+                        
                 duration_per_image = audio_clip.duration
                 
+                # --- TOP HALF (AI Image/Video) ---
                 if media.endswith(".mp4"):
-                    clip = VideoFileClip(media)
-                    if clip.duration < duration_per_image:
+                    top_clip = VideoFileClip(media)
+                    if top_clip.duration < duration_per_image:
                         from moviepy.video.fx.all import loop
-                        clip = loop(clip, duration=duration_per_image)
+                        top_clip = loop(top_clip, duration=duration_per_image)
                     else:
-                        clip = clip.subclip(0, duration_per_image)
+                        top_clip = top_clip.subclip(0, duration_per_image)
                     
-                    clip = clip.resize(height=resolution[1])
-                    w, h = clip.size
-                    clip = crop(clip, width=resolution[0], height=resolution[1], x_center=w/2)
+                    top_clip = top_clip.resize(height=half_res[1])
+                    w, h = top_clip.size
+                    top_clip = crop(top_clip, width=half_res[0], height=half_res[1], x_center=w/2)
                 else:
-                    clip = ImageClip(media).set_duration(duration_per_image)
-                    clip = clip.resize(height=resolution[1])
-                    clip = clip.resize(lambda t: 1 + 0.1 * (t / duration_per_image))
-                    clip = clip.set_position(('center', 'center'))
-                    clip = CompositeVideoClip([clip], size=resolution)
+                    from moviepy.editor import ImageClip
+                    top_clip = ImageClip(media).set_duration(duration_per_image)
+                    top_clip = top_clip.resize(height=half_res[1])
+                    top_clip = top_clip.resize(lambda t: 1 + 0.1 * (t / duration_per_image))
+                    top_clip = top_clip.set_position(('center', 'center'))
+                    top_clip = CompositeVideoClip([top_clip], size=half_res)
+                
+                # --- BOTTOM HALF (Satisfying Video) ---
+                if bg_full_clip:
+                    # Take a random chunk or just loop it
+                    if bg_full_clip.duration > duration_per_image:
+                        import random
+                        start_t = random.uniform(0, bg_full_clip.duration - duration_per_image)
+                        bottom_clip = bg_full_clip.subclip(start_t, start_t + duration_per_image)
+                    else:
+                        from moviepy.video.fx.all import loop
+                        bottom_clip = loop(bg_full_clip, duration=duration_per_image)
+                else:
+                    # Fallback to black if download failed
+                    from moviepy.editor import ColorClip
+                    bottom_clip = ColorClip(size=half_res, color=(0,0,0)).set_duration(duration_per_image)
+
+                # --- SPLIT SCREEN ASSEMBLY ---
+                stacked = clips_array([[top_clip], [bottom_clip]])
+                
+                # --- SUBTITLES ---
+                srt_path = aud.replace(".mp3", ".srt")
+                if os.path.exists(srt_path):
+                    # Generator for TextClip
+                    def generator(txt):
+                        return TextClip(txt, fontsize=70, color='white', 
+                                        stroke_color='black', stroke_width=3, 
+                                        size=(resolution[0]*0.9, None), method='caption')
                     
+                    subtitles = SubtitlesClip(srt_path, generator)
+                    # Position subtitles at the center of the entire screen
+                    subtitles = subtitles.set_position(('center', 'center'))
+                    stacked = CompositeVideoClip([stacked, subtitles])
+
                 # Bind audio to the clip
-                clip = clip.set_audio(audio_clip)
-                clips.append(clip)
+                stacked = stacked.set_audio(audio_clip)
+                clips.append(stacked)
             except Exception as e:
                 print(f"Error processing scene: {e}")
 
@@ -69,5 +179,7 @@ class EditorAgent:
         # Export
         final_video.write_videofile(output_path, fps=24, codec="libx264", audio_codec="aac", logger=None)
         
+        if bg_full_clip:
+            bg_full_clip.close()
         final_video.close()
         return output_path

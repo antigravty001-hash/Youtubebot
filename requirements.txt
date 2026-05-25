@@ -9,3 +9,4 @@ Pillow
 duckduckgo-search
 httpx==0.27.2
 youtube-search-python
+yt-dlp
