@@ -85,23 +85,35 @@ def produce_video(channel_type: str, language: str, format_type: str, dry_run: b
     voice_agent = VoiceAgent()
     visual_agent = VisualAgent()
     
-    os.makedirs("temp_assets", exist_ok=True)
-    voice_path = f"temp_assets/voice_{channel_type}_{language}.mp3"
-    
     voice_gender = chan_settings.get("voice_gender", "female")
-    full_text = " ".join([scene.get("voiceover_text", "") for scene in script.get("scenes", [])])
-    voice_agent.generate_voiceover(full_text, voice_gender, language, voice_path)
-
     visual_style = chan_settings.get("visual_style", "cinematic")
+    
     image_paths = []
+    audio_paths = []
+    
     for idx, scene in enumerate(script.get("scenes", [])):
+        # 1. Generate Voiceover for this scene
+        raw_text = scene.get("voiceover_text", "")
+        # Clean text for TTS
+        clean_text = raw_text.replace("*", "").replace("şşş", "").replace("hmm", "").replace("ahaha", "")
+        if not clean_text.strip():
+            clean_text = "..."
+            
+        scene_audio_path = f"temp_assets/voice_{channel_type}_{language}_{idx}.mp3"
+        voice_agent.generate_voiceover(clean_text, voice_gender, language, scene_audio_path)
+        audio_paths.append(scene_audio_path)
+        
+        # 2. Generate Visual for this scene
         visual_prompt = scene.get("visual_prompt", "nature")
         img_path = visual_agent.get_image(visual_prompt, channel_type, idx, visual_style)
         if img_path:
             image_paths.append(img_path)
+        else:
+            # Fallback image logic if visual generation completely fails
+            image_paths.append("temp_assets/fallback.jpg") # Assuming we handle this gracefully or it crashes later
 
-    if not image_paths:
-        raise Exception("Failed to get any images. Aborting.")
+    if not image_paths or len(image_paths) != len(audio_paths):
+        raise Exception("Failed to generate synced media. Aborting.")
 
     # Generate Thumbnail
     from agents.thumbnail_agent import ThumbnailAgent
@@ -115,7 +127,7 @@ def produce_video(channel_type: str, language: str, format_type: str, dry_run: b
     editor = EditorAgent()
     video_filename = f"output/{channel_type}_{language}_{format_type}.mp4"
     bgm_volume = float(chan_settings.get("bgm_volume", 0.1))
-    editor.assemble_video(image_paths, voice_path, format_type, video_filename, bgm_volume, channel_type)
+    editor.assemble_video(image_paths, audio_paths, format_type, video_filename, bgm_volume, channel_type)
 
     # 5. Upload
     video_url = None

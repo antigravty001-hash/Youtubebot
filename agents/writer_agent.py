@@ -30,6 +30,8 @@ class WriterAgent:
 
         DIRECTOR QUALITY CONTROL:
         Before outputting, review your script as a tough Hollywood Director. Rate it out of 10. If the pacing is slow or the visual prompts are boring, rewrite the script internally to be faster, more engaging, and with highly cinematic visual prompts. Ensure the final output is 10/10 quality.
+        
+        CRITICAL TTS RULE: The 'voiceover_text' MUST be plain, grammatically correct text. DO NOT use emojis. DO NOT use markdown like ** or *. DO NOT use sound effects like "şşş", "hmm", "ahaha", "woohoo" because the AI voice will mispronounce them or spell them out. Just use plain words.
 
         You MUST respond ONLY with a valid JSON object. Do not use markdown code blocks like ```json, just raw JSON.
         Format:
