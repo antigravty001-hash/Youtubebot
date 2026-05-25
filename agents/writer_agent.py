@@ -6,8 +6,8 @@ genai.configure(api_key=GEMINI_API_KEY)
 
 class WriterAgent:
     def __init__(self):
-        # We use gemini-1.5-flash-latest because it allows 1500 free requests per day and avoids v1beta 404 errors
-        self.model = genai.GenerativeModel('gemini-1.5-flash-latest')
+        # We use gemini-2.0-flash because it allows 1500 free requests per day and resolves the 404 error with 1.5
+        self.model = genai.GenerativeModel('gemini-2.0-flash')
 
     def write_script(self, topic: str, channel_type: str, language: str, format_type: str) -> dict:
         """
