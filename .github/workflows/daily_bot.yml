@@ -45,6 +45,14 @@ jobs:
           python main.py --channel kids
           python main.py --channel facts
           
+      - name: Upload Videos as Artifacts
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: Generated-Videos
+          path: output/*.mp4
+          retention-days: 3
+
       - name: Save data and keep alive
         if: always()
         run: |
