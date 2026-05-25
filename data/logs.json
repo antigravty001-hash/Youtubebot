@@ -1,5 +1,14 @@
 [
   {
+    "timestamp": "2026-05-25T23:40:17.757025",
+    "channel": "facts",
+    "language": "en",
+    "format": "shorts",
+    "status": "error",
+    "video_url": null,
+    "error_message": "Gemini API failed to generate script. Aborting production to prevent dummy video upload."
+  },
+  {
     "timestamp": "2026-05-25T23:38:29.921785",
     "channel": "facts",
     "language": "en",
