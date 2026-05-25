@@ -59,10 +59,14 @@ class EditorAgent:
         if bg_vid_path:
             try:
                 bg_full_clip = VideoFileClip(bg_vid_path).without_audio()
-                # Ensure it fills the half screen
-                bg_full_clip = bg_full_clip.resize(height=half_res[1])
+                # Ensure it fills the half screen proportionally
+                w_ratio = half_res[0] / bg_full_clip.size[0]
+                h_ratio = half_res[1] / bg_full_clip.size[1]
+                ratio = max(w_ratio, h_ratio)
+                
+                bg_full_clip = bg_full_clip.resize(ratio)
                 w, h = bg_full_clip.size
-                bg_full_clip = crop(bg_full_clip, width=half_res[0], height=half_res[1], x_center=w/2)
+                bg_full_clip = crop(bg_full_clip, width=half_res[0], height=half_res[1], x_center=w/2, y_center=h/2)
             except Exception as e:
                 print(f"Error loading background video: {e}")
                 bg_full_clip = None
@@ -78,6 +82,15 @@ class EditorAgent:
                 print(f"Failed to download whoosh: {e}")
 
         clips = []
+        current_bg_time = 0
+        
+        # Initialize continuous background tracker
+        if bg_full_clip:
+            import random
+            total_needed_duration = sum(AudioFileClip(a).duration for a in audio_paths)
+            if bg_full_clip.duration > total_needed_duration:
+                current_bg_time = random.uniform(0, bg_full_clip.duration - total_needed_duration)
+
         for idx, (media, aud) in enumerate(zip(images, audio_paths)):
             try:
                 from moviepy.editor import CompositeAudioClip
@@ -119,11 +132,10 @@ class EditorAgent:
                 
                 # --- BOTTOM HALF (Satisfying Video) ---
                 if bg_full_clip:
-                    # Take a random chunk or just loop it
-                    if bg_full_clip.duration > duration_per_image:
-                        import random
-                        start_t = random.uniform(0, bg_full_clip.duration - duration_per_image)
-                        bottom_clip = bg_full_clip.subclip(start_t, start_t + duration_per_image)
+                    # Continuous clip playing
+                    if bg_full_clip.duration > current_bg_time + duration_per_image:
+                        bottom_clip = bg_full_clip.subclip(current_bg_time, current_bg_time + duration_per_image)
+                        current_bg_time += duration_per_image
                     else:
                         from moviepy.video.fx.all import loop
                         bottom_clip = loop(bg_full_clip, duration=duration_per_image)

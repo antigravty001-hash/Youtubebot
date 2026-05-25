@@ -5,16 +5,14 @@ from config.settings import VOICES
 
 class VoiceAgent:
     def __init__(self):
-        pass
-
-    async def _generate(self, text: str, voice: str, output_path: str):
         import random
         rates = ["+0%", "+5%", "+10%", "-5%", "-10%"]
         pitches = ["+0Hz", "+5Hz", "+10Hz", "-5Hz", "-10Hz"]
-        rate = random.choice(rates)
-        pitch = random.choice(pitches)
-        
-        communicate = edge_tts.Communicate(text, voice, rate=rate, pitch=pitch)
+        self.rate = random.choice(rates)
+        self.pitch = random.choice(pitches)
+
+    async def _generate(self, text: str, voice: str, output_path: str):
+        communicate = edge_tts.Communicate(text, voice, rate=self.rate, pitch=self.pitch)
         
         # We will manually collect word boundaries to create 3-word chunks for subtitles
         word_boundaries = []

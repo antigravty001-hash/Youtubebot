@@ -22,16 +22,19 @@ class VisualAgent:
                 enhanced_prompt = f"{visual_style} style, masterpiece, best quality, perfect anatomy, highly detailed, {prompt}"
                 
             safe_prompt = urllib.parse.quote(enhanced_prompt)
-            # Added model=flux and enhance=true for world-class anatomy and realism
             url = f"https://image.pollinations.ai/prompt/{safe_prompt}?width=1080&height=1920&nologo=true&model=flux&enhance=true"
-            try:
-                response = requests.get(url)
-                if response.status_code == 200:
-                    with open(file_path, 'wb') as f:
-                        f.write(response.content)
-                    return file_path
-            except Exception as e:
-                print(f"Pollinations AI failed: {e}")
+            
+            import time
+            for attempt in range(3):
+                try:
+                    response = requests.get(url, timeout=30)
+                    if response.status_code == 200:
+                        with open(file_path, 'wb') as f:
+                            f.write(response.content)
+                        return file_path
+                except Exception as e:
+                    print(f"Pollinations AI failed (attempt {attempt+1}): {e}")
+                time.sleep(3)
             return None
 
         if channel_type == "kids" or not self.pixabay_key or self.pixabay_key == "yok":
