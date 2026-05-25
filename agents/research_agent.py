@@ -45,7 +45,12 @@ class ResearchAgent:
                     # But the simplest is just taking the top 3 relevance which are already proven
                     top_video = random.choice(valid_videos[:3])
                     title = top_video.get('title', query)
-                    views = top_video.get('viewCount', {}).get('short', 'Unknown views')
+                    views_data = top_video.get('viewCount', {})
+                    if not isinstance(views_data, dict):
+                        views_data = {}
+                    views = views_data.get('short', 'Unknown views')
+                    if views is None:
+                        views = 'Unknown views'
                     
                     print(f"[Trend Agent] 🎯 Found Viral Concept: '{title}' ({views})")
                     return f"VIRAL YOUTUBE CONCEPT: {title}"

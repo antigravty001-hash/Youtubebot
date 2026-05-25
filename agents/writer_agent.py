@@ -8,11 +8,12 @@ class WriterAgent:
     def __init__(self):
         # We will try to find a model that has free quota and doesn't return 404/429
         self.models_to_try = [
-            'gemini-1.5-flash-8b',  # Very fast, huge free tier
-            'gemini-1.5-flash',     # 1500 free requests per day
-            'gemini-1.0-pro',       # Legacy stable, high free tier
-            'gemini-pro',           # Older alias for 1.0 pro
-            'gemini-2.0-flash'      # Works, but has 20 req/day limit (fallback of last resort)
+            'gemini-2.5-flash',     # Works for user, 20/day limit is fine since we do 6 videos/day
+            'gemini-1.5-flash-002', # Explicit version
+            'gemini-1.5-flash-001',
+            'gemini-1.5-flash-8b',
+            'gemini-1.5-flash',
+            'gemini-2.0-flash'
         ]
         self.model = None
 
