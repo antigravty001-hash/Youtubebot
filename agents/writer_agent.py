@@ -6,13 +6,37 @@ genai.configure(api_key=GEMINI_API_KEY)
 
 class WriterAgent:
     def __init__(self):
-        # We use gemini-2.0-flash because it allows 1500 free requests per day and resolves the 404 error with 1.5
-        self.model = genai.GenerativeModel('gemini-2.0-flash')
+        # We will try to find a model that has free quota and doesn't return 404/429
+        self.models_to_try = [
+            'gemini-1.5-flash-8b',  # Very fast, huge free tier
+            'gemini-1.5-flash',     # 1500 free requests per day
+            'gemini-1.0-pro',       # Legacy stable, high free tier
+            'gemini-pro',           # Older alias for 1.0 pro
+            'gemini-2.0-flash'      # Works, but has 20 req/day limit (fallback of last resort)
+        ]
+        self.model = None
+
+    def _get_working_model(self):
+        """Finds and returns the first working Gemini model"""
+        for model_name in self.models_to_try:
+            try:
+                print(f"[Writer Agent] Trying model: {model_name}...")
+                model = genai.GenerativeModel(model_name)
+                # Quick test
+                model.generate_content("test")
+                print(f"[Writer Agent] Successfully connected to {model_name}!")
+                return model
+            except Exception as e:
+                print(f"[Writer Agent] Model {model_name} failed: {e}")
+                continue
+        raise Exception("All Gemini models failed. Check API key quotas.")
 
     def write_script(self, topic: str, channel_type: str, language: str, format_type: str) -> dict:
         """
-        Uses Gemini to generate a video script in JSON format.
+        Generates a viral script using Gemini.
         """
+        if not self.model:
+            self.model = self._get_working_model()
         if format_type == "shorts":
             duration_instruction = "Approximate duration: 45 seconds. CRITICAL RULE: Your ENTIRE script (voiceover_text combined) MUST NOT exceed 100 words! If it is longer, YouTube will reject it as a Short."
         else:
