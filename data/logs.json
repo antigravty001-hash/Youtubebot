@@ -1,5 +1,23 @@
 [
   {
+    "timestamp": "2026-05-25T17:21:52.125161",
+    "channel": "facts",
+    "language": "en",
+    "format": "shorts",
+    "status": "error",
+    "video_url": null,
+    "error_message": "max() iterable argument is empty"
+  },
+  {
+    "timestamp": "2026-05-25T17:21:41.178153",
+    "channel": "kids",
+    "language": "tr",
+    "format": "shorts",
+    "status": "error",
+    "video_url": null,
+    "error_message": "max() iterable argument is empty"
+  },
+  {
     "timestamp": "2026-05-25T16:21:23.442049",
     "channel": "facts",
     "language": "tr",
