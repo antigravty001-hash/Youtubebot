@@ -34,6 +34,13 @@ class WriterAgent:
         
         CRITICAL TTS RULE: The 'voiceover_text' MUST be plain, grammatically correct text. DO NOT use emojis. DO NOT use markdown like ** or *. DO NOT use sound effects like "şşş", "hmm", "ahaha", "woohoo" because the AI voice will mispronounce them or spell them out. Just use plain words.
 
+        CRITICAL VISUAL PROMPT RULE:
+        The AI image generator WILL BLEND characters if you put them in the same prompt. For example, if you write 'A child and a goat', the AI will generate a terrifying 'child with goat ears'. 
+        TO FIX THIS: Your 'visual_prompt' MUST contain ONLY ONE main subject per scene. 
+        - BAD: "A child talking to a goat in a forest"
+        - GOOD: "A cute white goat standing in a forest" or "A happy child smiling in a forest"
+        Focus on extreme simplicity and single subjects.
+
         You MUST respond ONLY with a valid JSON object. Do not use markdown code blocks like ```json, just raw JSON.
         Format:
         {{
@@ -42,7 +49,7 @@ class WriterAgent:
             "tags": ["tag1", "tag2"],
             "scenes": [
                 {{
-                    "visual_prompt": "Describe what image to search or generate for this scene",
+                    "visual_prompt": "Describe ONLY ONE subject. Very simple. English.",
                     "voiceover_text": "The exact text to be spoken by the narrator"
                 }},
                 ...
