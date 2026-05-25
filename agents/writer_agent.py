@@ -6,8 +6,8 @@ genai.configure(api_key=GEMINI_API_KEY)
 
 class WriterAgent:
     def __init__(self):
-        # We use gemini-2.5-flash as it's fast and free tier is generous
-        self.model = genai.GenerativeModel('gemini-2.5-flash')
+        # We use gemini-1.5-flash because it allows 1500 free requests per day (unlike 2.5 which limits to 20)
+        self.model = genai.GenerativeModel('gemini-1.5-flash')
 
     def write_script(self, topic: str, channel_type: str, language: str, format_type: str) -> dict:
         """
@@ -19,40 +19,36 @@ class WriterAgent:
             duration_instruction = "Approximate duration: 3 minutes. CRITICAL RULE: Aim for around 400-500 words for the voiceover."
             
         prompt = f"""
+        You are a master scriptwriter for a dark, eerie, Netflix-style documentary channel called 'Unknown Archives'.
         Write a video script for a YouTube {format_type}.
-        Channel type: {channel_type} (kids cartoon/story OR adult facts/history).
         Language: {language.upper()}
         {duration_instruction}
 
         TOPIC/INSPIRATION: {topic}
         
-        CRITICAL INSTRUCTION: If the TOPIC/INSPIRATION is a "VIRAL YOUTUBE CONCEPT" (e.g. a title of a highly viewed video like 'Şekerin Zararları' or 'Unsolved Mysteries'), DO NOT just copy it. Instead, extract the CORE IDEA that made it viral.
+        CRITICAL SCRIPTING RULES:
+        1. HOOK: Start with an extreme, unsettling hook that immediately grabs attention. (e.g., "The universe is hiding a terrifying secret," or "What you are about to hear will change how you sleep.")
+        2. TONE: Dark, mysterious, serious, and deeply engaging. 
+        3. CALL TO ACTION: End the script with a compelling, thematic subscribe call (e.g., "Karanlık sırların devamı için arşive katıl" or "Subscribe to uncover more unknown archives.")
         
-        HOOK A/B TESTING:
-        As an expert YouTube marketer, silently brainstorm 3 totally different "Hooks" (the first 3 seconds of the script). Evaluate which of the 3 hooks will have the absolute highest Retention and CTR (Click-Through Rate) based on human psychology. Then, write the ENTIRE SCRIPT using ONLY that WINNING hook. Hook the viewer instantly!
+        CRITICAL TTS RULE: The 'voiceover_text' MUST be plain, grammatically correct text. DO NOT use emojis. DO NOT use sound effects like "şşş", "hmm". Just use plain words.
 
-        DIRECTOR QUALITY CONTROL:
-        Before outputting, SILENTLY review your script as a tough Hollywood Director. Rate it out of 10 internally. If the pacing is slow or the visual prompts are boring, rewrite the script internally to be faster and more engaging.
-        DO NOT OUTPUT YOUR REVIEW, THOUGHTS, OR ANY TEXT. YOUR ENTIRE RESPONSE MUST BE ONLY THE RAW JSON OBJECT.
+        CRITICAL VISUAL PROMPT RULE (HYPER-REALISM):
+        The AI image generator must create stunning, terrifying, and awe-inspiring images. You CANNOT use simple prompts like "Space" or "A star".
+        Your 'visual_prompt' MUST be highly descriptive, English only, and MUST include these style keywords: 
+        ", dark cinematic, hyper-realistic, 8k resolution, Unreal Engine 5 render, highly detailed, atmospheric lighting, masterpiece, documentary footage"
         
-        CRITICAL TTS RULE: The 'voiceover_text' MUST be plain, grammatically correct text. DO NOT use emojis. DO NOT use markdown like ** or *. DO NOT use sound effects like "şşş", "hmm", "ahaha", "woohoo" because the AI voice will mispronounce them or spell them out. Just use plain words.
-
-        CRITICAL VISUAL PROMPT RULE:
-        The AI image generator WILL BLEND characters if you put them in the same prompt. For example, if you write 'A child and a goat', the AI will generate a terrifying 'child with goat ears'. 
-        TO FIX THIS: Your 'visual_prompt' MUST contain ONLY ONE main subject per scene. 
-        - BAD: "A child talking to a goat in a forest"
-        - GOOD: "A cute white goat standing in a forest" or "A happy child smiling in a forest"
-        Focus on extreme simplicity and single subjects.
-
-        You MUST respond ONLY with a valid JSON object. Do not use markdown code blocks like ```json, just raw JSON.
+        Example Good Visual Prompt: "A massive, terrifying black hole consuming a dying star, dark cinematic, hyper-realistic, 8k resolution, Unreal Engine 5 render, highly detailed, atmospheric lighting, masterpiece"
+        
+        You MUST respond ONLY with a valid JSON object. Do not use markdown code blocks like ```json.
         Format:
         {{
-            "title": "Catchy YouTube Title",
+            "title": "Catchy, Eerie YouTube Title",
             "description": "Video description with hashtags",
-            "tags": ["tag1", "tag2"],
+            "tags": ["mystery", "space", "scary", "facts", "unknown"],
             "scenes": [
                 {{
-                    "visual_prompt": "Describe ONLY ONE subject. Very simple. English.",
+                    "visual_prompt": "Highly detailed English prompt with 8K UE5 keywords",
                     "voiceover_text": "The exact text to be spoken by the narrator"
                 }},
                 ...

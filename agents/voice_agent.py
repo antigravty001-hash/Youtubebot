@@ -5,11 +5,9 @@ from config.settings import VOICES
 
 class VoiceAgent:
     def __init__(self):
-        import random
-        rates = ["+0%", "+5%", "+10%", "-5%", "-10%"]
-        pitches = ["+0Hz", "+5Hz", "+10Hz", "-5Hz", "-10Hz"]
-        self.rate = random.choice(rates)
-        self.pitch = random.choice(pitches)
+        # Locked for "Unknown Archives" (dark, deep, serious tone)
+        self.rate = "-5%"
+        self.pitch = "-5Hz"
 
     async def _generate(self, text: str, voice: str, output_path: str):
         communicate = edge_tts.Communicate(text, voice, rate=self.rate, pitch=self.pitch)

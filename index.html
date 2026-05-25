@@ -109,68 +109,15 @@
             <!-- Left Column: Settings -->
             <div class="xl:col-span-2 space-y-6">
                 
-                <!-- Kids Channel Settings -->
-                <div class="glass-panel p-6 rounded-2xl relative overflow-hidden">
-                    <div class="absolute top-0 right-0 w-32 h-32 bg-secondary/5 rounded-bl-full -z-10"></div>
-                    <div class="flex justify-between items-center mb-6 border-b border-slate-700 pb-4">
-                        <h2 class="text-xl font-bold text-white flex items-center gap-2">
-                            <i class="fa-solid fa-child text-secondary"></i> Storytime (Çocuk)
+                <!-- Kids Channel Settings (DEACTIVATED) -->
+                <div class="glass-panel p-6 rounded-2xl relative overflow-hidden opacity-50">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-slate-700/5 rounded-bl-full -z-10"></div>
+                    <div class="flex justify-between items-center mb-2 border-b border-slate-700 pb-4">
+                        <h2 class="text-xl font-bold text-slate-500 flex items-center gap-2">
+                            <i class="fa-solid fa-child"></i> Storytime (DEVRE DIŞI)
                         </h2>
                     </div>
-                    
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                        <div>
-                            <label class="block text-xs font-semibold text-slate-400 mb-1 uppercase tracking-wider">Dil</label>
-                            <select id="kids-lang" class="w-full input-field rounded-lg p-2.5">
-                                <option value="tr">🇹🇷 Türkçe</option>
-                                <option value="en">🇺🇸 İngilizce</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-xs font-semibold text-slate-400 mb-1 uppercase tracking-wider">Format</label>
-                            <select id="kids-format" class="w-full input-field rounded-lg p-2.5">
-                                <option value="shorts">📱 Shorts (Dikey)</option>
-                                <option value="long">🖥️ Uzun Video (Yatay)</option>
-                            </select>
-                        </div>
-                        
-                        <!-- PREMIUM SETTINGS -->
-                        <div>
-                            <label class="block text-xs font-semibold text-slate-400 mb-1 uppercase tracking-wider">Görsel Stil</label>
-                            <select id="kids-style" class="w-full input-field rounded-lg p-2.5">
-                                <option value="cute cartoon">🎨 Çizgi Film / Sevimli</option>
-                                <option value="3D animation Pixar">🎬 3D Pixar Tarzı</option>
-                                <option value="watercolor illustration">🖌️ Sulu Boya Masal</option>
-                                <option value="cinematic">🎥 Sinematik Gerçekçi</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-xs font-semibold text-slate-400 mb-1 uppercase tracking-wider">Seslendirme (Yapay Zeka)</label>
-                            <select id="kids-voice" class="w-full input-field rounded-lg p-2.5">
-                                <option value="female">👩 Kadın Seslendirmen</option>
-                                <option value="male">👨 Erkek Seslendirmen</option>
-                            </select>
-                        </div>
-                        <div class="md:col-span-2">
-                            <label class="block text-xs font-semibold text-slate-400 mb-1 uppercase tracking-wider">Müzik Sesi Seviyesi</label>
-                            <div class="flex items-center gap-4">
-                                <i class="fa-solid fa-volume-down text-slate-500"></i>
-                                <input type="range" id="kids-volume" min="0" max="0.5" step="0.05" value="0.1" class="w-full accent-secondary">
-                                <i class="fa-solid fa-volume-up text-slate-500"></i>
-                            </div>
-                        </div>
-                        
-                        <div class="md:col-span-2 mt-2">
-                            <label class="block text-xs font-semibold text-slate-400 mb-1 uppercase tracking-wider">Özel Konu (Otomatik trendler için 'auto' bırakın)</label>
-                            <input type="text" id="kids-topic" class="w-full input-field rounded-lg p-2.5" placeholder="Örn: Ormanda kaybolan sihirli tavşan">
-                        </div>
-                        <div class="md:col-span-2 bg-slate-800/50 p-4 rounded-lg flex items-center border border-slate-700/50">
-                            <input type="checkbox" id="kids-series" class="w-5 h-5 rounded border-slate-600 text-secondary focus:ring-secondary focus:ring-offset-dark">
-                            <label for="kids-series" class="ml-3 text-sm text-slate-300">
-                                Bu konuyu <span class="font-bold text-white">Seri</span> olarak üret. (Sıradaki: <span id="kids-ep" class="text-secondary font-bold">1</span>. Bölüm)
-                            </label>
-                        </div>
-                    </div>
+                    <p class="text-xs text-slate-400">Bu kanalın üretimi "Unknown Archives" projesine odaklanmak amacıyla durdurulmuştur.</p>
                 </div>
 
                 <!-- Facts Channel Settings -->
@@ -250,16 +197,28 @@
                     
                     <div class="space-y-3">
                         <div class="flex items-center justify-between bg-slate-800/50 p-3 rounded-lg">
-                            <span class="text-sm font-medium text-slate-300">1. Yükleme</span>
+                            <span class="text-sm font-medium text-slate-300">Yükleme 1</span>
                             <input type="time" id="time-1" class="input-field rounded p-1 text-sm w-24 text-center">
                         </div>
                         <div class="flex items-center justify-between bg-slate-800/50 p-3 rounded-lg">
-                            <span class="text-sm font-medium text-slate-300">2. Yükleme</span>
+                            <span class="text-sm font-medium text-slate-300">Yükleme 2</span>
                             <input type="time" id="time-2" class="input-field rounded p-1 text-sm w-24 text-center">
                         </div>
                         <div class="flex items-center justify-between bg-slate-800/50 p-3 rounded-lg">
-                            <span class="text-sm font-medium text-slate-300">3. Yükleme</span>
+                            <span class="text-sm font-medium text-slate-300">Yükleme 3</span>
                             <input type="time" id="time-3" class="input-field rounded p-1 text-sm w-24 text-center">
+                        </div>
+                        <div class="flex items-center justify-between bg-slate-800/50 p-3 rounded-lg">
+                            <span class="text-sm font-medium text-slate-300">Yükleme 4</span>
+                            <input type="time" id="time-4" class="input-field rounded p-1 text-sm w-24 text-center">
+                        </div>
+                        <div class="flex items-center justify-between bg-slate-800/50 p-3 rounded-lg">
+                            <span class="text-sm font-medium text-slate-300">Yükleme 5</span>
+                            <input type="time" id="time-5" class="input-field rounded p-1 text-sm w-24 text-center">
+                        </div>
+                        <div class="flex items-center justify-between bg-slate-800/50 p-3 rounded-lg">
+                            <span class="text-sm font-medium text-slate-300">Yükleme 6</span>
+                            <input type="time" id="time-6" class="input-field rounded p-1 text-sm w-24 text-center">
                         </div>
                     </div>
                 </div>
@@ -371,15 +330,8 @@
                 settingsSha = data.sha;
                 const content = JSON.parse(decodeURIComponent(escape(atob(data.content))));
                 
-                // Kids
-                document.getElementById('kids-lang').value = content.kids.language || 'tr';
-                document.getElementById('kids-format').value = content.kids.format || 'shorts';
-                document.getElementById('kids-style').value = content.kids.visual_style || 'cute cartoon';
-                document.getElementById('kids-voice').value = content.kids.voice_gender || 'female';
-                document.getElementById('kids-volume').value = content.kids.bgm_volume ?? 0.1;
-                document.getElementById('kids-topic').value = content.kids.topic || 'auto';
-                document.getElementById('kids-series').checked = content.kids.is_series || false;
-                document.getElementById('kids-ep').innerText = content.kids.series_episode || 1;
+                // Kids panel is deactivated visually, but we preserve existing kids data if it exists
+                window.existingKidsData = content.kids || {};
 
                 // Facts
                 document.getElementById('facts-lang').value = content.facts.language || 'tr';
@@ -404,7 +356,7 @@
                 const cronRegex = /- cron: '0 (\d+) \* \* \*'/g;
                 let match;
                 let i = 1;
-                while ((match = cronRegex.exec(workflowContent)) !== null && i <= 3) {
+                while ((match = cronRegex.exec(workflowContent)) !== null && i <= 6) {
                     let utcHour = parseInt(match[1]);
                     let trHour = (utcHour + 3) % 24;
                     document.getElementById(`time-${i}`).value = `${trHour.toString().padStart(2, '0')}:00`;
@@ -420,16 +372,7 @@
             btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Kaydediliyor...';
             
             const settings = {
-                kids: {
-                    language: document.getElementById('kids-lang').value,
-                    format: document.getElementById('kids-format').value,
-                    visual_style: document.getElementById('kids-style').value,
-                    voice_gender: document.getElementById('kids-voice').value,
-                    bgm_volume: parseFloat(document.getElementById('kids-volume').value),
-                    topic: document.getElementById('kids-topic').value || 'auto',
-                    is_series: document.getElementById('kids-series').checked,
-                    series_episode: parseInt(document.getElementById('kids-ep').innerText)
-                },
+                kids: window.existingKidsData || {},
                 facts: {
                     language: document.getElementById('facts-lang').value,
                     format: document.getElementById('facts-format').value,
@@ -457,7 +400,7 @@
             }
 
             let newWorkflowContent = workflowContent;
-            for(let i=1; i<=3; i++) {
+            for(let i=1; i<=6; i++) {
                 const timeVal = document.getElementById(`time-${i}`).value;
                 if(timeVal) {
                     let trHour = parseInt(timeVal.split(':')[0]);
