@@ -88,6 +88,8 @@ def produce_video(channel_type: str, language: str, format_type: str, dry_run: b
     voice_gender = chan_settings.get("voice_gender", "female")
     visual_style = chan_settings.get("visual_style", "cinematic")
     
+    os.makedirs("temp_assets", exist_ok=True)
+    
     image_paths = []
     audio_paths = []
     
