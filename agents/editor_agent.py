@@ -153,17 +153,20 @@ class EditorAgent:
                 
                 # --- SUBTITLES ---
                 srt_path = aud.replace(".mp3", ".srt")
-                if os.path.exists(srt_path):
-                    # Generator for TextClip
-                    def generator(txt):
-                        return TextClip(txt, fontsize=70, color='white', 
-                                        stroke_color='black', stroke_width=3, 
-                                        size=(resolution[0]*0.9, None), method='caption')
-                    
-                    subtitles = SubtitlesClip(srt_path, generator)
-                    # Position subtitles at the center of the entire screen
-                    subtitles = subtitles.set_position(('center', 'center'))
-                    stacked = CompositeVideoClip([stacked, subtitles])
+                if os.path.exists(srt_path) and os.path.getsize(srt_path) > 10:
+                    try:
+                        # Generator for TextClip
+                        def generator(txt):
+                            return TextClip(txt, fontsize=70, color='white', 
+                                            stroke_color='black', stroke_width=3, 
+                                            size=(resolution[0]*0.9, None), method='caption')
+                        
+                        subtitles = SubtitlesClip(srt_path, generator)
+                        # Position subtitles at the center of the entire screen
+                        subtitles = subtitles.set_position(('center', 'center'))
+                        stacked = CompositeVideoClip([stacked, subtitles])
+                    except Exception as sub_err:
+                        print(f"Failed to apply subtitles from {srt_path}: {sub_err}")
 
                 # Bind audio to the clip
                 stacked = stacked.set_audio(audio_clip)

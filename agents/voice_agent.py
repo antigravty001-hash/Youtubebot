@@ -14,15 +14,15 @@ class VoiceAgent:
     async def _generate(self, text: str, voice: str, output_path: str):
         communicate = edge_tts.Communicate(text, voice, rate=self.rate, pitch=self.pitch)
         
-        # We will manually collect word boundaries to create 3-word chunks for subtitles
-        word_boundaries = []
+        # We will manually collect boundaries to create subtitles
+        boundaries = []
         
         with open(output_path, "wb") as f:
             async for chunk in communicate.stream():
                 if chunk["type"] == "audio":
                     f.write(chunk["data"])
-                elif chunk["type"] == "WordBoundary":
-                    word_boundaries.append(chunk)
+                elif chunk["type"] in ["WordBoundary", "SentenceBoundary"]:
+                    boundaries.append(chunk)
 
         # Generate SRT
         def format_time(t_100ns):
@@ -35,21 +35,36 @@ class VoiceAgent:
 
         srt_path = output_path.replace(".mp3", ".srt")
         srt_content = ""
-        chunk_size = 3
         counter = 1
         
-        for i in range(0, len(word_boundaries), chunk_size):
-            chunk_words = word_boundaries[i:i+chunk_size]
-            if not chunk_words: continue
-            
-            start_t = chunk_words[0]["offset"]
-            end_t = chunk_words[-1]["offset"] + chunk_words[-1]["duration"]
-            text_str = " ".join([w["text"] for w in chunk_words])
-            
-            srt_content += f"{counter}\n"
-            srt_content += f"{format_time(start_t)} --> {format_time(end_t)}\n"
-            srt_content += f"{text_str}\n\n"
-            counter += 1
+        # Check if we got word boundaries or sentence boundaries
+        is_word_level = all(b["type"] == "WordBoundary" for b in boundaries) if boundaries else False
+        
+        if is_word_level:
+            chunk_size = 3
+            for i in range(0, len(boundaries), chunk_size):
+                chunk_words = boundaries[i:i+chunk_size]
+                if not chunk_words: continue
+                
+                start_t = chunk_words[0]["offset"]
+                end_t = chunk_words[-1]["offset"] + chunk_words[-1]["duration"]
+                text_str = " ".join([w["text"] for w in chunk_words])
+                
+                srt_content += f"{counter}\n"
+                srt_content += f"{format_time(start_t)} --> {format_time(end_t)}\n"
+                srt_content += f"{text_str}\n\n"
+                counter += 1
+        else:
+            # Fallback to SentenceBoundary or individual chunks
+            for b in boundaries:
+                start_t = b["offset"]
+                end_t = b["offset"] + b["duration"]
+                text_str = b["text"]
+                
+                srt_content += f"{counter}\n"
+                srt_content += f"{format_time(start_t)} --> {format_time(end_t)}\n"
+                srt_content += f"{text_str}\n\n"
+                counter += 1
             
         with open(srt_path, "w", encoding="utf-8") as f:
             f.write(srt_content)
