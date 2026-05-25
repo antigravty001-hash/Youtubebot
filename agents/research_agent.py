@@ -1,5 +1,5 @@
+from youtubesearchpython import VideosSearch
 import random
-import subprocess
 import json
 
 class ResearchAgent:
@@ -13,7 +13,7 @@ class ResearchAgent:
     def get_topic(self, channel_type: str, language: str) -> str:
         """
         Acts as a Real-Time Trend Tracker. Searches YouTube for highly relevant and popular
-        videos in the niche from the LAST 3 DAYS and extracts the title of a viral video.
+        videos in the niche and extracts the title of a viral video.
         """
         query_list = self.queries.get(language, ["trending mysteries"])
         
@@ -32,40 +32,25 @@ class ResearchAgent:
         query = random.choice(query_list)
         
         try:
-            print(f"[Trend Agent] Scanning YouTube (Last 3 Days) for niche: '{query}'...")
+            print(f"[Trend Agent] Scanning YouTube for niche: '{query}'...")
             
-            # Use yt-dlp to search for the top 5 videos uploaded in the last 3 days
-            cmd = [
-                "yt-dlp",
-                f"ytsearch5:{query}",
-                "--dateafter", "now-3days",
-                "--dump-json",
-                "--no-warnings"
-            ]
+            # Using VideosSearch now that httpx proxy bug is fixed
+            videos_search = VideosSearch(query, limit=15, region="TR" if language=="tr" else "US")
+            results = videos_search.result()
             
-            result = subprocess.run(cmd, capture_output=True, text=True)
-            
-            valid_videos = []
-            for line in result.stdout.strip().split('\n'):
-                if not line: continue
-                try:
-                    video_data = json.loads(line)
-                    title = video_data.get('title', '')
-                    views = video_data.get('view_count', 0)
-                    if title:
-                        valid_videos.append({'title': title, 'views': views})
-                except json.JSONDecodeError:
-                    continue
+            if results and 'result' in results:
+                valid_videos = results['result']
+                if valid_videos:
+                    # Sort by views (approximate parsing since viewCount is text like '1.2M views')
+                    # But the simplest is just taking the top 3 relevance which are already proven
+                    top_video = random.choice(valid_videos[:3])
+                    title = top_video.get('title', query)
+                    views = top_video.get('viewCount', {}).get('short', 'Unknown views')
                     
-            if valid_videos:
-                # Sort by views to find the most viral one in the last 3 days
-                valid_videos.sort(key=lambda x: x['views'], reverse=True)
-                top_video = valid_videos[0]
-                
-                print(f"[Trend Agent] 🎯 Found Viral Concept (Last 3 Days): '{top_video['title']}' ({top_video['views']} views)")
-                return f"VIRAL YOUTUBE CONCEPT: {top_video['title']}"
-                
-            print("[Trend Agent] No viral videos found in the last 3 days for this query. Falling back.")
+                    print(f"[Trend Agent] 🎯 Found Viral Concept: '{title}' ({views})")
+                    return f"VIRAL YOUTUBE CONCEPT: {title}"
+                    
+            print("[Trend Agent] No viral videos found. Falling back.")
             return f"Base Concept: {query}"
         except Exception as e:
             print(f"[Trend Agent] Search failed: {e}")
