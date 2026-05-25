@@ -32,20 +32,29 @@ class VisualAgent:
         if channel_type == "kids" or not self.pixabay_key or self.pixabay_key == "yok":
             return use_pollinations()
 
-        # Try Pixabay for Facts channel
+        # Try Pixabay VIDEO for Facts channel
         try:
-            url = f"https://pixabay.com/api/?key={self.pixabay_key}&q={urllib.parse.quote(prompt)}&image_type=photo&orientation=vertical&per_page=3"
+            url = f"https://pixabay.com/api/videos/?key={self.pixabay_key}&q={urllib.parse.quote(prompt)}&video_type=all&per_page=3"
             response = requests.get(url)
             if response.status_code == 200:
                 data = response.json()
                 if 'hits' in data and len(data['hits']) > 0:
-                    img_url = data['hits'][0]['largeImageURL']
-                    img_data = requests.get(img_url).content
-                    with open(file_path, 'wb') as f:
-                        f.write(img_data)
-                    return file_path
+                    # Find a vertical video if possible, else just use the best HD one
+                    best_vid = data['hits'][0]
+                    for hit in data['hits']:
+                        # Prefer vertical or HD videos
+                        if hit['videos']['large']['url']:
+                            best_vid = hit
+                            break
+                    
+                    vid_url = best_vid['videos']['large']['url']
+                    vid_data = requests.get(vid_url).content
+                    vid_path = f"temp_assets/vid_{index}.mp4"
+                    with open(vid_path, 'wb') as f:
+                        f.write(vid_data)
+                    return vid_path
         except Exception as e:
-            print(f"Pixabay fetch failed: {e}. Falling back to AI...")
+            print(f"Pixabay video fetch failed: {e}. Falling back to AI...")
             
         # Fallback if Pixabay fails
         return use_pollinations()

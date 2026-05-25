@@ -28,6 +28,9 @@ class WriterAgent:
         HOOK A/B TESTING:
         As an expert YouTube marketer, silently brainstorm 3 totally different "Hooks" (the first 3 seconds of the script). Evaluate which of the 3 hooks will have the absolute highest Retention and CTR (Click-Through Rate) based on human psychology. Then, write the ENTIRE SCRIPT using ONLY that WINNING hook. Hook the viewer instantly!
 
+        DIRECTOR QUALITY CONTROL:
+        Before outputting, review your script as a tough Hollywood Director. Rate it out of 10. If the pacing is slow or the visual prompts are boring, rewrite the script internally to be faster, more engaging, and with highly cinematic visual prompts. Ensure the final output is 10/10 quality.
+
         You MUST respond ONLY with a valid JSON object. Do not use markdown code blocks like ```json, just raw JSON.
         Format:
         {{

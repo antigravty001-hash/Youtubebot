@@ -19,13 +19,39 @@ class EditorAgent:
 
         resolution = (FORMATS[format_type]["width"], FORMATS[format_type]["height"])
 
+        from moviepy.editor import VideoFileClip, CompositeVideoClip
+        from moviepy.video.fx.all import crop
+
         clips = []
-        for img in images:
-            # Create an ImageClip
-            clip = ImageClip(img).set_duration(duration_per_image)
-            # Resize it to fill the screen (this might distort, in a real app we'd crop/pad)
-            clip = clip.resize(newsize=resolution)
-            clips.append(clip)
+        for media in images:
+            if media.endswith(".mp4"):
+                try:
+                    clip = VideoFileClip(media)
+                    # Loop or cut to duration
+                    if clip.duration < duration_per_image:
+                        from moviepy.video.fx.all import loop
+                        clip = loop(clip, duration=duration_per_image)
+                    else:
+                        clip = clip.subclip(0, duration_per_image)
+                    
+                    # Resize to fill height, then crop center to fix aspect ratio
+                    clip = clip.resize(height=resolution[1])
+                    w, h = clip.size
+                    clip = crop(clip, width=resolution[0], height=resolution[1], x_center=w/2)
+                    clips.append(clip)
+                except Exception as e:
+                    print(f"Error loading video clip {media}: {e}")
+            else:
+                # Create an ImageClip with Ken Burns Zoom Effect
+                clip = ImageClip(media).set_duration(duration_per_image)
+                # 1. Resize base to fill height
+                clip = clip.resize(height=resolution[1])
+                # 2. Apply zoom effect (1.0 to 1.1)
+                clip = clip.resize(lambda t: 1 + 0.1 * (t / duration_per_image))
+                # 3. Center and wrap in CompositeVideoClip to enforce exact resolution
+                clip = clip.set_position(('center', 'center'))
+                clip = CompositeVideoClip([clip], size=resolution)
+                clips.append(clip)
 
         # Concatenate
         final_video = concatenate_videoclips(clips, method="compose")
