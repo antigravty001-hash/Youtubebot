@@ -15,7 +15,12 @@ class VisualAgent:
         file_path = f"temp_assets/img_{index}.jpg"
 
         def use_pollinations():
-            enhanced_prompt = f"{visual_style} style, masterpiece, best quality, perfect anatomy, highly detailed, {prompt}"
+            if channel_type == "kids":
+                # Strict child-friendly styling
+                enhanced_prompt = f"Cute 3D Pixar Disney animation style, extremely cute, child-friendly, colorful, bright, happy, smiling, no scary elements, safe for kids, {prompt}"
+            else:
+                enhanced_prompt = f"{visual_style} style, masterpiece, best quality, perfect anatomy, highly detailed, {prompt}"
+                
             safe_prompt = urllib.parse.quote(enhanced_prompt)
             # Added model=flux and enhance=true for world-class anatomy and realism
             url = f"https://image.pollinations.ai/prompt/{safe_prompt}?width=1080&height=1920&nologo=true&model=flux&enhance=true"
