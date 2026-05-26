@@ -212,9 +212,43 @@ def download_3d_video(prompt: str, index: int, api_key: str) -> str:
             # Video generation GET request is synchronous and blocks until fully rendered
             response = requests.get(url, timeout=180)
             if response.status_code == 200:
+                content = response.content
+                # Robust validation of returned media
+                if content.startswith(b'{"success":false') or content.startswith(b'{"error"'):
+                    print(f"[3D Visual Agent] ⚠️ API returned JSON error: {content[:100]}")
+                    return None
+                
+                # If Pollinations fell back to a still image, automatically animate it!
+                if content.startswith(b'\xff\xd8\xff'):
+                    print(f"[3D Visual Agent] ℹ️ API returned a still 3D image (fallback). Animating into 3D moving video...")
+                    img_path = f"temp_assets/3d_img_{index}.jpg"
+                    with open(img_path, 'wb') as f:
+                        f.write(content)
+                    
+                    # Convert to cinematic zoompan video using FFmpeg
+                    import subprocess
+                    try:
+                        # 30 fps vertical MP4 with zoom-in effect (smooth camera slide)
+                        subprocess.run([
+                            "ffmpeg", "-y", "-loop", "1", "-i", img_path, "-c:v", "libx264", "-t", "10",
+                            "-pix_fmt", "yuv420p", 
+                            "-vf", "zoompan=z='min(zoom+0.0015,1.5)':d=250:s=1080x1920:x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)'", 
+                            file_path
+                        ], check=True, capture_output=True)
+                        print(f"[3D Visual Agent] 🟢 Successfully animated still image into video!")
+                        return file_path
+                    except Exception as ffmpeg_err:
+                        print(f"[3D Visual Agent] ⚠️ FFmpeg zoompan failed: {ffmpeg_err}. Scaling simply...")
+                        subprocess.run([
+                            "ffmpeg", "-y", "-loop", "1", "-i", img_path, "-c:v", "libx264", "-t", "10",
+                            "-pix_fmt", "yuv420p", "-vf", "scale=1080:1920", file_path
+                        ], check=False, capture_output=True)
+                        return file_path
+                
+                # Real MP4 video returned!
                 with open(file_path, 'wb') as f:
-                    f.write(response.content)
-                print(f"[3D Visual Agent] 🟢 Successfully rendered 3D clip for scene {index}!")
+                    f.write(content)
+                print(f"[3D Visual Agent] 🟢 Successfully downloaded 3D MP4 video!")
                 return file_path
             else:
                 print(f"[3D Visual Agent] API returned status code {response.status_code} (attempt {attempt+1})")
