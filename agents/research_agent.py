@@ -41,9 +41,28 @@ class ResearchAgent:
             if results and 'result' in results:
                 valid_videos = results['result']
                 if valid_videos:
-                    # Sort by views (approximate parsing since viewCount is text like '1.2M views')
-                    # But the simplest is just taking the top 3 relevance which are already proven
-                    top_video = random.choice(valid_videos[:3])
+                    # Parse views to integers
+                    def get_views(v):
+                        try:
+                            views_data = v.get('viewCount', {})
+                            if isinstance(views_data, dict):
+                                text = views_data.get('text', '0')
+                                return int(''.join(filter(str.isdigit, text)))
+                        except:
+                            pass
+                        return 0
+                    
+                    # Sort videos by actual view count
+                    valid_videos.sort(key=get_views, reverse=True)
+                    
+                    # Filter for highly viral videos (> 500K views)
+                    viral_videos = [v for v in valid_videos if get_views(v) >= 500000]
+                    
+                    if viral_videos:
+                        top_video = random.choice(viral_videos[:5]) # Pick from top viral ones
+                    else:
+                        top_video = valid_videos[0] # Fallback to the most viewed one available
+                        
                     title = top_video.get('title', query)
                     views_data = top_video.get('viewCount', {})
                     if not isinstance(views_data, dict):

@@ -119,8 +119,8 @@ class EditorAgent:
                                             size=(resolution[0]*0.9, None), method='caption')
                         
                         subtitles = SubtitlesClip(srt_path, generator)
-                        # Position subtitles at the center of the entire screen
-                        subtitles = subtitles.set_position(('center', 'center'))
+                        # Position subtitles slightly below the center of the screen
+                        subtitles = subtitles.set_position(('center', 0.65), relative=True)
                         stacked = CompositeVideoClip([stacked, subtitles]).set_duration(duration_per_image)
                     except Exception as sub_err:
                         print(f"Failed to apply subtitles from {srt_path}: {sub_err}")

@@ -50,7 +50,7 @@ class WriterAgent:
         if not self.model:
             self.model = self._get_working_model()
         if format_type == "shorts":
-            duration_instruction = "Approximate duration: 45 seconds. CRITICAL RULE: Your ENTIRE script (voiceover_text combined) MUST NOT exceed 100 words! If it is longer, YouTube will reject it as a Short."
+            duration_instruction = "Approximate duration: 55 seconds. CRITICAL RULE: Your ENTIRE script (voiceover_text combined) MUST be exactly 130 to 150 words long to ensure the video is exactly 50-60 seconds long!"
         else:
             duration_instruction = "Approximate duration: 3 minutes. CRITICAL RULE: Aim for around 400-500 words for the voiceover."
             
@@ -64,8 +64,9 @@ class WriterAgent:
         
         CRITICAL SCRIPTING RULES:
         1. HOOK: Start with an extreme, unsettling hook that immediately grabs attention. (e.g., "The universe is hiding a terrifying secret," or "What you are about to hear will change how you sleep.")
-        2. TONE: Dark, mysterious, serious, and deeply engaging. 
-        3. CALL TO ACTION: End the script with a compelling, thematic subscribe call (e.g., "Karanlık sırların devamı için arşive katıl" or "Subscribe to uncover more unknown archives.")
+        2. FACTS: You MUST include exactly 3 to 4 distinct, mind-blowing, highly secretive hidden facts. Frame them as 'Top Secret', 'Highly Classified', or 'Knowledge they tried to hide from you'. Do NOT just give general information.
+        3. TONE: Dark, mysterious, serious, and deeply engaging. It must feel like exposing a grand conspiracy.
+        4. CALL TO ACTION: End the script with a compelling, thematic subscribe call (e.g., "Karanlık sırların devamı için arşive katıl" or "Subscribe to uncover more unknown archives.")
         
         CRITICAL TTS RULE: The 'voiceover_text' MUST be plain, grammatically correct text. DO NOT use emojis. DO NOT use sound effects like "şşş", "hmm". Just use plain words.
 
