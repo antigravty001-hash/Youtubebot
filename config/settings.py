@@ -1,8 +1,8 @@
 import os
 
 # API Keys (loaded from environment variables in GitHub Actions)
-GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
-PIXABAY_API_KEY = os.environ.get("PIXABAY_API_KEY")
+GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY", "")
+PIXABAY_API_KEY = os.environ.get("PIXABAY_API_KEY", "")
 
 # YouTube Channels Setup (Each needs its own refresh token)
 # We will use env variables: YOUTUBE_KIDS_REFRESH_TOKEN, YOUTUBE_FACTS_REFRESH_TOKEN

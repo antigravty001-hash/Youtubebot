@@ -32,11 +32,17 @@ class EditorAgent:
 
         # --- DOWNLOAD WHOOSH SFX ---
         whoosh_path = "temp_assets/whoosh.m4a"
-        if not os.path.exists(whoosh_path):
+        if not os.path.exists("temp_assets/whoosh.m4a"):
             import subprocess
             try:
                 print("Downloading whoosh sound effect...")
-                subprocess.run(["yt-dlp", "ytsearch1:whoosh transition sound effect short", "-f", "bestaudio", "--max-downloads", "1", "-o", whoosh_path], check=True)
+                subprocess.run([
+                    "yt-dlp",
+                    "ytsearch1:whoosh transition sound effect short",
+                    "-f", "bestaudio",
+                    "--max-downloads", "1",
+                    "-o", "temp_assets/whoosh.m4a"
+                ], check=False, capture_output=True) # check=False because max-downloads causes exit code 101
             except Exception as e:
                 print(f"Failed to download whoosh: {e}")
 
