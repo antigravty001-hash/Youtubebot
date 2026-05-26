@@ -236,10 +236,16 @@
                         <i class="fa-solid fa-rocket text-error"></i> Manuel Ateşleme
                     </h2>
                     <p class="text-xs text-slate-400 mb-4">Ayarları buluta kaydettikten sonra saati beklemeden anında video üretimi başlatın.</p>
-                    <button onclick="triggerWorkflow()" class="w-full bg-error/20 border border-error/50 text-error hover:bg-error hover:text-white font-bold py-3 rounded-xl transition duration-300 relative z-10 cursor-pointer">
-                        Hemen Üret
-                    </button>
+                    <div class="flex flex-col gap-3">
+                        <button onclick="triggerWorkflow()" class="w-full bg-error/20 border border-error/50 text-error hover:bg-error hover:text-white font-bold py-3 rounded-xl transition duration-300 relative z-10 cursor-pointer">
+                            Hemen Üret
+                        </button>
+                        <button onclick="trigger3DWorkflow()" class="w-full bg-secondary/20 border border-secondary/50 text-secondary hover:bg-secondary hover:text-white font-bold py-3 rounded-xl transition duration-300 relative z-10 cursor-pointer">
+                            <i class="fa-solid fa-cube mr-1"></i> 3D Üret (Test)
+                        </button>
+                    </div>
                     <p id="trigger-status" class="text-center text-xs text-error hidden mt-2">Komut gönderildi! 5-10 dk sürecektir.</p>
+                    <p id="trigger-3d-status" class="text-center text-xs text-secondary hidden mt-2">3D Üret komutu gönderildi! 5-10 dk sürecektir.</p>
                 </div>
 
                 <!-- Logs -->
@@ -486,6 +492,17 @@
             try {
                 await githubApi('actions/workflows/daily_bot.yml/dispatches', 'POST', { ref: "main" });
                 const status = document.getElementById('trigger-status');
+                status.classList.remove('hidden');
+                setTimeout(() => status.classList.add('hidden'), 5000);
+            } catch(e) {
+                alert("Tetikleme hatası.");
+            }
+        }
+
+        async function trigger3DWorkflow() {
+            try {
+                await githubApi('actions/workflows/generate_3d.yml/dispatches', 'POST', { ref: "main" });
+                const status = document.getElementById('trigger-3d-status');
                 status.classList.remove('hidden');
                 setTimeout(() => status.classList.add('hidden'), 5000);
             } catch(e) {
