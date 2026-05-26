@@ -1,5 +1,14 @@
 [
   {
+    "timestamp": "2026-05-26T09:13:45.086595",
+    "channel": "facts",
+    "language": "en",
+    "format": "shorts",
+    "status": "success",
+    "video_url": "https://youtube.com/watch?v=VauuS6TqTfw",
+    "error_message": null
+  },
+  {
     "timestamp": "2026-05-26T04:31:46.137346",
     "channel": "facts",
     "language": "en",
