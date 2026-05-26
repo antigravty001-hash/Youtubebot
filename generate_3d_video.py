@@ -194,7 +194,7 @@ def append_log(channel, lang, format_type, video_url=None, error=None):
     with open("data/logs.json", "w", encoding="utf-8") as f:
         json.dump(logs, f, indent=2, ensure_ascii=False)
 
-def download_3d_video(prompt: str, index: int, api_keys_list: list) -> str:
+def download_3d_video(prompt: str, index: int, api_keys_list: list, seed: int = None) -> str:
     """Queries Pollinations AI Video Generation API using roaming models and keys, or animates still images with cinematic 3D pan."""
     os.makedirs("temp_assets", exist_ok=True)
     file_path = f"temp_assets/3d_vid_{index}.mp4"
@@ -221,6 +221,8 @@ def download_3d_video(prompt: str, index: int, api_keys_list: list) -> str:
             continue
         for model in video_models:
             url = f"https://gen.pollinations.ai/video/{safe_prompt}?key={key}&model={model}"
+            if seed is not None:
+                url += f"&seed={seed}"
             print(f"[3D Visual Agent] -> Querying video model '{model}' with key '{key[:8]}...'")
             try:
                 response = requests.get(url, timeout=120)
@@ -257,6 +259,8 @@ def download_3d_video(prompt: str, index: int, api_keys_list: list) -> str:
             continue
         # Use high quality flux model to produce gorgeous 3D Pixar render
         img_url = f"https://image.pollinations.ai/prompt/{safe_prompt}?width=1080&height=1920&nologo=true&model=flux&key={key}"
+        if seed is not None:
+            img_url += f"&seed={seed}"
         print(f"[3D Visual Agent] -> Fetching premium 3D image using key '{key[:8]}...'")
         try:
             img_res = requests.get(img_url, timeout=60)
@@ -274,6 +278,8 @@ def download_3d_video(prompt: str, index: int, api_keys_list: list) -> str:
         print(f"[3D Visual Agent] -> Fetching image using public endpoint...")
         try:
             img_url = f"https://image.pollinations.ai/prompt/{safe_prompt}?width=1080&height=1920&nologo=true&model=flux"
+            if seed is not None:
+                img_url += f"&seed={seed}"
             img_res = requests.get(img_url, timeout=60)
             if img_res.status_code == 200:
                 with open(img_path, 'wb') as f:
@@ -352,6 +358,9 @@ def main():
     api_keys = [k.strip() for k in GEMINI_API_KEY.split(",") if k.strip()]
     pollinations_keys = [k.strip() for k in POLLINATIONS_API_KEY.split(",") if k.strip()]
 
+    # Generate unified seed for character consistency across all scenes
+    video_seed = random.randint(1, 2147483647)
+    print(f"[3D Visual Agent] Generated unified video seed for character consistency: {video_seed}")
     
     # 1. Select absurd topic
     topic = "havuçtan ceket giyen ve konuşan adam modern aydınlık bir evde"
@@ -368,9 +377,13 @@ def main():
     
     SCENARIO DIRECTIVES (ULTRA-QUALITY 3D SHORTS):
     - Visual setting: A luxury, bright modern house, packed with rich details, sunny daytime.
-    - Character action: A stylized 3D character (man) wearing a high-fashion, detailed orange jacket made of carrots. The man must be actively speaking, gesturing dynamically, and reacting to the camera in every scene.
-    - Weather/Lighting: Dynamic sunny daytime lighting matching the modern home setting.
+    - Character Model: A mature, handsome 35-year-old adult man (strictly adult, NOT a child, NOT a kid) with a neat short beard, masculine sharp facial structures, and short modern hair.
+    - Character action: The mature adult character must be wearing a high-fashion, highly detailed orange jacket made of textured carrots. The man must be actively speaking, gesturing dynamically, and reacting comedic-style to the camera in every scene.
+    - Weather/Lighting: Beautiful, bright sunny daytime lighting matching the modern home setting.
     - Subtitle requirement: Do not use emojis in the voiceover_text.
+    
+    CHARACTER CONSISTENCY RULE: Every single scene's visual_prompt MUST start with this exact core prefix to ensure the same face, style, and clothes:
+    "Stylized 3D CGI animation, a mature 35-year-old adult man (not a child) with a neat short beard, sharp features, wearing a highly detailed high-fashion orange carrot jacket, speaking and gesturing, standing in a brightly lit luxury modern house"
     
     OUTPUT FORMAT: You MUST return a JSON object (no markdown formatting blocks).
     JSON structure:
@@ -380,7 +393,7 @@ def main():
         "tags": ["3d", "comedy", "funny", "shorts"],
         "scenes": [
             {{
-                "visual_prompt": "Highly detailed English prompt describing the 3D talking character wearing the carrot jacket in a bright modern home setting, dynamic motion",
+                "visual_prompt": "Stylized 3D CGI animation, a mature 35-year-old adult man (not a child) with a neat short beard, sharp features, wearing a highly detailed high-fashion orange carrot jacket, speaking and gesturing, standing in a brightly lit luxury modern house, [custom scene details, facial expression, and dynamic actions here]",
                 "voiceover_text": "Spoken narrator/character text"
             }},
             ...
@@ -505,28 +518,48 @@ def main():
         
         # B. 3D Video Clip Generation
         visual_prompt = scene.get("visual_prompt", "A 3D character wearing a carrot jacket")
-        clip_path = download_3d_video(visual_prompt, idx, pollinations_keys)
+        clip_path = download_3d_video(visual_prompt, idx, pollinations_keys, seed=video_seed)
         if clip_path:
             video_clips.append(clip_path)
         else:
-            # Safe Fallback to image-to-video style if video endpoint fails
-            print("[Fallback] Video generation failed. Creating robust dummy MP4 for assembly.")
+            # Safe Fallback to image-to-video style if video endpoint fails completely
+            print("[Fallback] Both video models and internal fallback failed. Running ultimate assembly fallback...")
             fallback_video = f"temp_assets/3d_fallback_{idx}.mp4"
             if not os.path.exists(fallback_video):
                 # Download still image first
-                safe_prompt = urllib.parse.quote(f"3D Pixar Disney style animation, highly detailed, {visual_prompt}")
+                safe_prompt = urllib.parse.quote(f"3D CGI animation, a mature 35-year-old adult man with a neat short beard, sharp features, wearing a highly detailed high-fashion orange carrot jacket, speaking, in a luxury bright modern house, {visual_prompt}")
                 img_url = f"https://image.pollinations.ai/prompt/{safe_prompt}?width=1080&height=1920&nologo=true&model=flux"
-                img_data = requests.get(img_url).content
-                img_path = f"temp_assets/fallback_img_{idx}.jpg"
-                with open(img_path, 'wb') as f:
-                    f.write(img_data)
+                if video_seed is not None:
+                    img_url += f"&seed={video_seed}"
                 
-                # Make still image into 5-second video using FFmpeg
-                import subprocess
-                subprocess.run([
-                    "ffmpeg", "-y", "-loop", "1", "-i", img_path, "-c:v", "libx264", "-t", "5", 
-                    "-pix_fmt", "yuv420p", "-vf", "scale=1080:1920", fallback_video
-                ], check=False, capture_output=True)
+                try:
+                    img_data = requests.get(img_url, timeout=60).content
+                    img_path = f"temp_assets/fallback_img_{idx}.jpg"
+                    with open(img_path, 'wb') as f:
+                        f.write(img_data)
+                    
+                    # Make still image into animated video using the embedded FFmpeg binary
+                    from moviepy.config import get_setting
+                    try:
+                        ffmpeg_binary = get_setting("FFMPEG_BINARY")
+                    except Exception:
+                        ffmpeg_binary = "ffmpeg"
+                        
+                    filter_str = (
+                        "scale=4000:7111,"
+                        "zoompan=z='1.15+0.1*sin(on/100)':"
+                        "x='(iw-iw/zoom)*(0.5+0.25*sin(on/80))':"
+                        "y='(ih-ih/zoom)*(0.5+0.2*cos(on/100))':"
+                        "d=250:s=1080x1920:fps=30"
+                    )
+                    
+                    import subprocess
+                    subprocess.run([
+                        ffmpeg_binary, "-y", "-loop", "1", "-i", img_path, "-vf", filter_str, "-t", "8.3",
+                        "-c:v", "libx264", "-pix_fmt", "yuv420p", fallback_video
+                    ], check=False, capture_output=True)
+                except Exception as fall_err:
+                    print(f"Fallback animation failed: {fall_err}")
             video_clips.append(fallback_video)
 
     # 3. Compile and Assemble 3D Video (YouTube upload skipped)
