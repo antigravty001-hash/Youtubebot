@@ -1,36 +1,47 @@
 import google.generativeai as genai
 import json
+import random
 from config.settings import GEMINI_API_KEY
-
-genai.configure(api_key=GEMINI_API_KEY)
 
 class WriterAgent:
     def __init__(self):
-        # We will try to find a model that has free quota and doesn't return 404/429
         self.models_to_try = [
-            'gemini-2.5-flash',     # Works for user, 20/day limit is fine since we do 6 videos/day
-            'gemini-1.5-flash-002', # Explicit version
-            'gemini-1.5-flash-001',
-            'gemini-1.5-flash-8b',
+            'gemini-2.5-flash',     # Works for user, 20/day limit per key
+            'gemini-2.0-flash-lite',
+            'gemini-1.5-flash-002',
             'gemini-1.5-flash',
+            'gemini-1.0-pro',
+            'gemini-pro',
             'gemini-2.0-flash'
         ]
+        
+        # Support multiple API keys separated by comma
+        self.api_keys = [k.strip() for k in GEMINI_API_KEY.split(",") if k.strip()]
         self.model = None
 
     def _get_working_model(self):
-        """Finds and returns the first working Gemini model"""
-        for model_name in self.models_to_try:
-            try:
-                print(f"[Writer Agent] Trying model: {model_name}...")
-                model = genai.GenerativeModel(model_name)
-                # Quick test
-                model.generate_content("test")
-                print(f"[Writer Agent] Successfully connected to {model_name}!")
-                return model
-            except Exception as e:
-                print(f"[Writer Agent] Model {model_name} failed: {e}")
-                continue
-        raise Exception("All Gemini models failed. Check API key quotas.")
+        """Finds and returns the first working Gemini model using multiple API keys"""
+        # Shuffle keys to distribute load if multiple are provided
+        keys_to_try = list(self.api_keys)
+        random.shuffle(keys_to_try)
+        
+        for api_key in keys_to_try:
+            print(f"[Writer Agent] Trying API Key: {api_key[:8]}...{api_key[-4:]}")
+            genai.configure(api_key=api_key)
+            
+            for model_name in self.models_to_try:
+                try:
+                    print(f"  -> Testing model: {model_name}...")
+                    model = genai.GenerativeModel(model_name)
+                    # Quick test
+                    model.generate_content("test")
+                    print(f"[Writer Agent] 🟢 Successfully connected to {model_name} with this key!")
+                    return model
+                except Exception as e:
+                    print(f"  -> Model {model_name} failed: {e}")
+                    continue
+                    
+        raise Exception("All Gemini models on ALL API keys failed. Check API key quotas or add more keys.")
 
     def write_script(self, topic: str, channel_type: str, language: str, format_type: str) -> dict:
         """
