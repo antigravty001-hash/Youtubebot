@@ -112,7 +112,11 @@ def produce_video(channel_type: str, language: str, format_type: str, dry_run: b
             image_paths.append(img_path)
         else:
             # Fallback image logic if visual generation completely fails
-            image_paths.append("temp_assets/fallback.jpg") # Assuming we handle this gracefully or it crashes later
+            fallback_path = "temp_assets/fallback.jpg"
+            if not os.path.exists(fallback_path):
+                import PIL.Image
+                PIL.Image.new('RGB', (1080, 1920), color=(0, 0, 0)).save(fallback_path)
+            image_paths.append(fallback_path)
 
     if not image_paths or len(image_paths) != len(audio_paths):
         raise Exception("Failed to generate synced media. Aborting.")

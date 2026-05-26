@@ -66,11 +66,29 @@ class EditorAgent:
                         pass
                         
                 duration_per_image = audio_clip.duration
+                if duration_per_image is None or duration_per_image <= 0:
+                    # Fallback to reading duration from SRT file
+                    srt_path = aud.replace(".mp3", ".srt")
+                    if os.path.exists(srt_path):
+                        with open(srt_path, "r", encoding="utf-8") as f:
+                            lines = f.readlines()
+                            for line in reversed(lines):
+                                if "-->" in line:
+                                    end_time_str = line.split("-->")[1].strip()
+                                    h, m, s_ms = end_time_str.split(":")
+                                    s, ms = s_ms.split(",")
+                                    duration_per_image = int(h)*3600 + int(m)*60 + int(s) + int(ms)/1000.0
+                                    break
+                if duration_per_image is None or duration_per_image <= 0:
+                    duration_per_image = 10.0 # Absolute fallback
+                    
+                # Explicitly set audio clip duration to prevent NoneType downstream
+                audio_clip = audio_clip.set_duration(duration_per_image)
                 
                 # --- FULL SCREEN (AI Image/Video) ---
                 if media.endswith(".mp4"):
                     top_clip = VideoFileClip(media)
-                    if top_clip.duration < duration_per_image:
+                    if top_clip.duration is None or top_clip.duration < duration_per_image:
                         from moviepy.video.fx.all import loop
                         top_clip = loop(top_clip, duration=duration_per_image)
                     else:
@@ -80,19 +98,15 @@ class EditorAgent:
                     w, h = top_clip.size
                     top_clip = crop(top_clip, width=resolution[0], height=resolution[1], x_center=w/2)
                 else:
-                    from moviepy.editor import ImageClip, ColorClip
-                    try:
-                        top_clip = ImageClip(media).set_duration(duration_per_image)
-                        top_clip = top_clip.resize(height=resolution[1])
-                        top_clip = top_clip.resize(lambda t: 1 + 0.1 * (t / duration_per_image))
-                        top_clip = top_clip.set_position(('center', 'center'))
-                        top_clip = CompositeVideoClip([top_clip], size=resolution)
-                    except Exception as e:
-                        print(f"Image load failed for {media}, using black screen: {e}")
-                        top_clip = ColorClip(size=resolution, color=(0,0,0)).set_duration(duration_per_image)
+                    from moviepy.editor import ImageClip
+                    top_clip = ImageClip(media).set_duration(duration_per_image)
+                    top_clip = top_clip.resize(height=resolution[1])
+                    top_clip = top_clip.resize(lambda t: 1 + 0.1 * (t / duration_per_image))
+                    top_clip = top_clip.set_position(('center', 'center'))
+                    top_clip = CompositeVideoClip([top_clip], size=resolution).set_duration(duration_per_image)
                 
                 # --- NO SPLIT SCREEN, TOP CLIP IS THE ONLY VISUAL ---
-                stacked = top_clip
+                stacked = top_clip.set_duration(duration_per_image)
                 
                 # --- SUBTITLES ---
                 srt_path = aud.replace(".mp3", ".srt")
@@ -124,8 +138,8 @@ class EditorAgent:
         # Procedural Eerie Drone Background Music (Royalty Free)
         from moviepy.editor import CompositeAudioClip
         drone_clip = self.generate_eerie_drone(total_duration)
-        final_audio = CompositeAudioClip([final_video.audio, drone_clip])
-        final_video = final_video.set_audio(final_audio)
+        final_audio = CompositeAudioClip([final_video.audio, drone_clip]).set_duration(total_duration)
+        final_video = final_video.set_audio(final_audio).set_duration(total_duration)
 
         # Export
         final_video.write_videofile(output_path, fps=24, codec="libx264", audio_codec="aac", logger=None)
