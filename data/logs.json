@@ -1,5 +1,14 @@
 [
   {
+    "timestamp": "2026-05-26T00:01:06.215632",
+    "channel": "facts",
+    "language": "en",
+    "format": "shorts",
+    "status": "error",
+    "video_url": null,
+    "error_message": "All Gemini models failed. Check API key quotas."
+  },
+  {
     "timestamp": "2026-05-25T23:53:44.367069",
     "channel": "facts",
     "language": "en",
