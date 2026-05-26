@@ -10,9 +10,9 @@
     "series_episode": 1
   },
   "facts": {
-    "language": "en",
+    "language": "tr",
     "format": "shorts",
-    "visual_style": "cyberpunk 2077",
+    "visual_style": "vintage documentary",
     "voice_gender": "male",
     "bgm_volume": 0.1,
     "topic": "auto",
