@@ -45,10 +45,8 @@ class WriterAgent:
 
     def write_script(self, topic: str, channel_type: str, language: str, format_type: str) -> dict:
         """
-        Generates a viral script using Gemini.
+        Generates a viral script using Gemini, with fallback to Groq and OpenRouter if Gemini fails.
         """
-        if not self.model:
-            self.model = self._get_working_model()
         if format_type == "shorts":
             duration_instruction = "Approximate duration: 55 seconds. CRITICAL RULE: Your ENTIRE script (voiceover_text combined) MUST be exactly 130 to 150 words long to ensure the video is exactly 50-60 seconds long!"
         else:
@@ -120,16 +118,80 @@ class WriterAgent:
         }}
         """
 
+        def parse_json_safely(raw_text):
+            cleaned = raw_text.strip()
+            if cleaned.startswith("```json"):
+                cleaned = cleaned[7:]
+            elif cleaned.startswith("```"):
+                cleaned = cleaned[3:]
+            if cleaned.endswith("```"):
+                cleaned = cleaned[:-3]
+            return json.loads(cleaned.strip())
+
+        # 1. Try Gemini (Primary)
         try:
+            print("[Writer Agent] 🔮 Attempting script generation with Gemini...")
+            if not self.model:
+                self.model = self._get_working_model()
             response = self.model.generate_content(prompt)
-            # Clean up potential markdown formatting
-            text = response.text.strip()
-            if text.startswith("```json"):
-                text = text[7:]
-            if text.endswith("```"):
-                text = text[:-3]
-                
-            return json.loads(text.strip())
+            return parse_json_safely(response.text)
         except Exception as e:
-            print(f"Error generating script: {e}")
-            raise Exception("Gemini API failed to generate script. Aborting production to prevent dummy video upload.")
+            print(f"[Writer Agent] ⚠️ Gemini failed: {e}. Attempting Groq fallback...")
+
+        # 2. Try Groq (First Fallback)
+        GROQ_API_KEY = os.environ.get("GROQ_API_KEY", "")
+        if GROQ_API_KEY:
+            try:
+                import requests
+                print("[Writer Agent] ⚡ Attempting script generation with Groq...")
+                url = "https://api.groq.com/openai/v1/chat/completions"
+                headers = {
+                    "Authorization": f"Bearer {GROQ_API_KEY}",
+                    "Content-Type": "application/json"
+                }
+                payload = {
+                    "model": "llama3-70b-8192",
+                    "messages": [{"role": "user", "content": prompt}],
+                    "temperature": 0.7,
+                    "response_format": {"type": "json_object"}
+                }
+                res = requests.post(url, headers=headers, json=payload, timeout=30)
+                if res.status_code == 200:
+                    result_text = res.json()["choices"][0]["message"]["content"]
+                    return parse_json_safely(result_text)
+                else:
+                    print(f"[Writer Agent] Groq API returned status code {res.status_code}")
+            except Exception as groq_err:
+                print(f"[Writer Agent] ⚠️ Groq failed: {groq_err}. Attempting OpenRouter fallback...")
+        else:
+            print("[Writer Agent] ⚠️ GROQ_API_KEY is not defined. Skipping...")
+
+        # 3. Try OpenRouter (Second Fallback)
+        OPENROUTER_API_KEY = os.environ.get("OPENROUTER_API_KEY", "")
+        if OPENROUTER_API_KEY:
+            try:
+                import requests
+                print("[Writer Agent] 🚀 Attempting script generation with OpenRouter...")
+                url = "https://openrouter.ai/api/v1/chat/completions"
+                headers = {
+                    "Authorization": f"Bearer {OPENROUTER_API_KEY}",
+                    "Content-Type": "application/json",
+                    "HTTP-Referer": "https://github.com/antigravty001-hash/Youtubebot"
+                }
+                payload = {
+                    "model": "meta-llama/llama-3.1-8b-instruct",
+                    "messages": [{"role": "user", "content": prompt}],
+                    "temperature": 0.7
+                }
+                res = requests.post(url, headers=headers, json=payload, timeout=30)
+                if res.status_code == 200:
+                    result_text = res.json()["choices"][0]["message"]["content"]
+                    return parse_json_safely(result_text)
+                else:
+                    print(f"[Writer Agent] OpenRouter API returned status code {res.status_code}")
+            except Exception as or_err:
+                print(f"[Writer Agent] ⚠️ OpenRouter failed: {or_err}")
+        else:
+            print("[Writer Agent] ⚠️ OPENROUTER_API_KEY is not defined. Skipping...")
+
+        raise Exception("All scriptwriter APIs (Gemini, Groq, OpenRouter) failed. Check quotas or key definitions.")

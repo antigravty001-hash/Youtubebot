@@ -40,6 +40,8 @@ jobs:
           YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
           YOUTUBE_KIDS_REFRESH_TOKEN: ${{ secrets.YOUTUBE_KIDS_REFRESH_TOKEN }}
           YOUTUBE_FACTS_REFRESH_TOKEN: ${{ secrets.YOUTUBE_FACTS_REFRESH_TOKEN }}
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
         run: |
           python main.py --channel facts
           

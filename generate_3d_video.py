@@ -248,33 +248,9 @@ def main():
         
     api_keys = [k.strip() for k in GEMINI_API_KEY.split(",") if k.strip()]
     
-    # 1. Selectabsurd topic
-    # Primary first task: Havuçtan ceket giyen adam (absürt komedi/bilim kurgu)
+    # 1. Select absurd topic
     topic = "havuçtan ceket giyen ve konuşan adam modern aydınlık bir evde"
     print(f"Targeting Absurd 3D Topic: {topic}")
-    
-    # Connect to Gemini
-    random.shuffle(api_keys)
-    model = None
-    models_to_try = ['gemini-2.5-flash', 'gemini-2.0-flash-lite', 'gemini-1.5-flash', 'gemini-2.0-flash']
-    
-    for api_key in api_keys:
-        genai.configure(api_key=api_key)
-        for model_name in models_to_try:
-            try:
-                test_model = genai.GenerativeModel(model_name)
-                test_model.generate_content("test")
-                model = test_model
-                print(f"[Gemini] Connected to {model_name}")
-                break
-            except:
-                continue
-        if model:
-            break
-            
-    if not model:
-        print("[Error] Failed to connect to Gemini API.")
-        return
 
     # Write Senaryo (Senaryo 30-40 sn Shorts uzunluğunda olmalı - Yaklaşık 90-110 kelime)
     script_prompt = f"""
@@ -307,20 +283,104 @@ def main():
     }}
     """
     
-    print("[Gemini] Generating absurd script...")
+    def parse_json_safely(raw_text):
+        cleaned = raw_text.strip()
+        if cleaned.startswith("```json"):
+            cleaned = cleaned[7:]
+        elif cleaned.startswith("```"):
+            cleaned = cleaned[3:]
+        if cleaned.endswith("```"):
+            cleaned = cleaned[:-3]
+        return json.loads(cleaned.strip())
+
+    script = None
+
+    # Resilient Multi-Provider script generation
+    # A. Try Gemini
     try:
-        response = model.generate_content(script_prompt)
-        text = response.text.strip()
-        if text.startswith("```json"):
-            text = text[7:]
-        if text.endswith("```"):
-            text = text[:-3]
-        script = json.loads(text.strip())
-        print(f"[Script] Title: {script.get('title')}")
-    except Exception as e:
-        print(f"[Error] Script generation failed: {e}")
-        append_log("facts", language, format_type, error=f"Script generation failed: {e}")
+        print("[Gemini] 🔮 Attempting script generation...")
+        random.shuffle(api_keys)
+        model = None
+        for api_key in api_keys:
+            genai.configure(api_key=api_key)
+            for model_name in ['gemini-2.5-flash', 'gemini-2.0-flash-lite', 'gemini-1.5-flash', 'gemini-2.0-flash']:
+                try:
+                    test_model = genai.GenerativeModel(model_name)
+                    response = test_model.generate_content(script_prompt)
+                    script = parse_json_safely(response.text)
+                    print(f"[Gemini] 🟢 Successfully generated script using {model_name}!")
+                    break
+                except:
+                    continue
+            if script:
+                break
+    except Exception as gemini_err:
+        print(f"[Gemini] ⚠️ Failed: {gemini_err}. Trying Groq fallback...")
+
+    # B. Try Groq (First Fallback)
+    if not script:
+        GROQ_API_KEY = os.environ.get("GROQ_API_KEY", "")
+        if GROQ_API_KEY:
+            try:
+                print("[Groq] ⚡ Attempting script generation with Groq...")
+                url = "https://api.groq.com/openai/v1/chat/completions"
+                headers = {
+                    "Authorization": f"Bearer {GROQ_API_KEY}",
+                    "Content-Type": "application/json"
+                }
+                payload = {
+                    "model": "llama3-70b-8192",
+                    "messages": [{"role": "user", "content": script_prompt}],
+                    "temperature": 0.7,
+                    "response_format": {"type": "json_object"}
+                }
+                res = requests.post(url, headers=headers, json=payload, timeout=30)
+                if res.status_code == 200:
+                    result_text = res.json()["choices"][0]["message"]["content"]
+                    script = parse_json_safely(result_text)
+                    print("[Groq] 🟢 Successfully generated script with Llama 3 70B!")
+                else:
+                    print(f"[Groq] API returned status code {res.status_code}")
+            except Exception as groq_err:
+                print(f"[Groq] ⚠️ Failed: {groq_err}. Trying OpenRouter fallback...")
+        else:
+            print("[Groq] ⚠️ GROQ_API_KEY is not defined. Skipping...")
+
+    # C. Try OpenRouter (Second Fallback)
+    if not script:
+        OPENROUTER_API_KEY = os.environ.get("OPENROUTER_API_KEY", "")
+        if OPENROUTER_API_KEY:
+            try:
+                print("[OpenRouter] 🚀 Attempting script generation with OpenRouter...")
+                url = "https://openrouter.ai/api/v1/chat/completions"
+                headers = {
+                    "Authorization": f"Bearer {OPENROUTER_API_KEY}",
+                    "Content-Type": "application/json",
+                    "HTTP-Referer": "https://github.com/antigravty001-hash/Youtubebot"
+                }
+                payload = {
+                    "model": "meta-llama/llama-3.1-8b-instruct",
+                    "messages": [{"role": "user", "content": script_prompt}],
+                    "temperature": 0.7
+                }
+                res = requests.post(url, headers=headers, json=payload, timeout=30)
+                if res.status_code == 200:
+                    result_text = res.json()["choices"][0]["message"]["content"]
+                    script = parse_json_safely(result_text)
+                    print("[OpenRouter] 🟢 Successfully generated script with Llama 3.1 8B!")
+                else:
+                    print(f"[OpenRouter] API returned status code {res.status_code}")
+            except Exception as or_err:
+                print(f"[OpenRouter] ⚠️ Failed: {or_err}")
+        else:
+            print("[OpenRouter] ⚠️ OPENROUTER_API_KEY is not defined. Skipping...")
+
+    if not script:
+        print("[Error] All scriptwriter APIs (Gemini, Groq, OpenRouter) failed. Aborting production.")
+        append_log("facts", language, format_type, error="All scriptwriter APIs failed.")
         return
+
+    print(f"[Script] Final selected title: {script.get('title')}")
 
     # 2. Render 3D Video Clips via Pollinations Video API
     os.makedirs("temp_assets", exist_ok=True)
