@@ -62,11 +62,38 @@ class WriterAgent:
 
         TOPIC/INSPIRATION: {topic}
         
+        ═══════════════════════════════════════════
+        OUROBOROS LOOP RULE (MOST CRITICAL - READ CAREFULLY):
+        ═══════════════════════════════════════════
+        Your script MUST form a PERFECT INFINITE LOOP. The viewer must NOT realize the video has restarted.
+        
+        HOW: The LAST scene's voiceover_text must END with an INCOMPLETE sentence or cliffhanger 
+        that GRAMMATICALLY and LOGICALLY continues into the FIRST scene's voiceover_text (the hook).
+        
+        Example (TR):
+        - Last scene ends with: "...ve bu sırrı dünyadan saklamanın asıl nedeni..."
+        - First scene (hook) starts with: "...insanlığın henüz hazır olmadığı bir gerçeği barındırmasıydı."
+        
+        Example (EN):
+        - Last scene ends with: "...and the real reason they buried this secret was..."
+        - First scene (hook) starts with: "...because what they found would shatter everything we believe."
+        
+        The transition must be SEAMLESS. No "subscribe" or CTA at the very end. Instead, place any 
+        subscribe call in the SECOND TO LAST scene, so the final scene is purely the loop cliffhanger.
+        ═══════════════════════════════════════════
+
         CRITICAL SCRIPTING RULES:
-        1. HOOK: Start with an extreme, unsettling hook that immediately grabs attention. (e.g., "The universe is hiding a terrifying secret," or "What you are about to hear will change how you sleep.")
+        1. HOOK: Start with the second half of the loop sentence, then immediately hit with an extreme, unsettling hook.
         2. FACTS: You MUST include exactly 3 to 4 distinct, mind-blowing, highly secretive hidden facts. Frame them as 'Top Secret', 'Highly Classified', or 'Knowledge they tried to hide from you'. Do NOT just give general information.
         3. TONE: Dark, mysterious, serious, and deeply engaging. It must feel like exposing a grand conspiracy.
-        4. CALL TO ACTION: End the script with a compelling, thematic subscribe call (e.g., "Karanlık sırların devamı için arşive katıl" or "Subscribe to uncover more unknown archives.")
+        4. SUBSCRIBE CTA: Place a compelling subscribe call in the SECOND TO LAST scene (NOT the last scene).
+        5. LOOP ENDING: The LAST scene must end with an unfinished sentence that feeds back into the first scene's hook.
+        
+        SUBTLE ENGAGEMENT EASTER EGG:
+        In exactly ONE of the scenes' visual_prompt, hide a VERY subtle anachronism that only eagle-eyed 
+        viewers would notice (e.g., a barely visible modern object in a historical setting, or a shadow 
+        that doesn't match). This must be EXTREMELY subtle — do NOT mention it in the voiceover. 
+        It is a secret visual detail for curious viewers who will comment about it.
         
         CRITICAL TTS RULE: The 'voiceover_text' MUST be plain, grammatically correct text. DO NOT use emojis. DO NOT use sound effects like "şşş", "hmm". Just use plain words.
 

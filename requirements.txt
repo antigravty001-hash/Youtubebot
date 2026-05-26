@@ -10,3 +10,4 @@ duckduckgo-search
 httpx==0.23.3
 youtube-search-python
 yt-dlp
+feedparser

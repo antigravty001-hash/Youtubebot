@@ -60,13 +60,46 @@ def produce_video(channel_type: str, language: str, format_type: str, dry_run: b
 
     # 1. Research / Topic Selection
     print("1. Determining topic...")
+    
+    # --- NEWS-JACKER: Auto-activate on 5th video of the day ---
+    today_video_count = 0
+    try:
+        with open("data/logs.json", "r", encoding="utf-8") as f:
+            all_logs = json.load(f)
+        today_str = datetime.now().strftime("%Y-%m-%d")
+        today_video_count = sum(
+            1 for log in all_logs
+            if log.get("status") == "success"
+            and log.get("timestamp", "").startswith(today_str)
+        )
+        print(f"[Daily Counter] Videos produced today so far: {today_video_count}")
+    except Exception:
+        pass
+    
+    use_news_mode = (today_video_count >= 4)  # 5th video (0-indexed: 0,1,2,3 done = this is #5)
+    
     if topic_setting == "auto":
         from agents.data_scientist_agent import DataScientistAgent
         ds = DataScientistAgent()
         ds.analyze_channel(channel_type)
         
-        researcher = ResearchAgent()
-        topic = researcher.get_topic(channel_type, language)
+        if use_news_mode:
+            # NEWS-JACKER MODE: 5th video of the day
+            print("[News Agent] 🗞️ NEWS-JACKER MODE ACTIVATED (5th video of the day)")
+            try:
+                from agents.news_agent import NewsAgent
+                news_agent = NewsAgent()
+                topic = news_agent.get_news_topic(language)
+                if not topic:
+                    raise Exception("No headlines found")
+            except Exception as e:
+                print(f"[News Agent] ⚠️ News-Jacker failed ({e}), falling back to standard trend...")
+                researcher = ResearchAgent()
+                topic = researcher.get_topic(channel_type, language)
+        else:
+            # NORMAL MODE: Use YouTube trend research
+            researcher = ResearchAgent()
+            topic = researcher.get_topic(channel_type, language)
     else:
         topic = topic_setting
         if is_series:
