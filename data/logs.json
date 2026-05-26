@@ -1,5 +1,14 @@
 [
   {
+    "timestamp": "2026-05-26T00:25:01.732207",
+    "channel": "facts",
+    "language": "en",
+    "format": "shorts",
+    "status": "error",
+    "video_url": null,
+    "error_message": "Attribute 'duration' not set"
+  },
+  {
     "timestamp": "2026-05-26T03:12:09.601116",
     "channel": "facts",
     "language": "en",
