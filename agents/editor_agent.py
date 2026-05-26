@@ -107,12 +107,12 @@ class EditorAgent:
                         subtitles = SubtitlesClip(srt_path, generator)
                         # Position subtitles at the center of the entire screen
                         subtitles = subtitles.set_position(('center', 'center'))
-                        stacked = CompositeVideoClip([stacked, subtitles])
+                        stacked = CompositeVideoClip([stacked, subtitles]).set_duration(duration_per_image)
                     except Exception as sub_err:
                         print(f"Failed to apply subtitles from {srt_path}: {sub_err}")
 
                 # Bind audio to the clip
-                stacked = stacked.set_audio(audio_clip)
+                stacked = stacked.set_audio(audio_clip).set_duration(duration_per_image)
                 clips.append(stacked)
             except Exception as e:
                 print(f"Error processing scene: {e}")
@@ -128,8 +128,6 @@ class EditorAgent:
         final_video = final_video.set_audio(final_audio)
 
         # Export
-        final_video.write_videofile(output_path, fps=24, codec="libx264", audio_codec="aac", logger=None)
-        
         final_video.write_videofile(output_path, fps=24, codec="libx264", audio_codec="aac", logger=None)
         final_video.close()
         return output_path
