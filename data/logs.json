@@ -1,5 +1,14 @@
 [
   {
+    "timestamp": "2026-05-26T18:28:42.927208",
+    "channel": "facts",
+    "language": "tr",
+    "format": "shorts",
+    "status": "error",
+    "video_url": null,
+    "error_message": "Assembly failed: max() iterable argument is empty"
+  },
+  {
     "timestamp": "2026-05-26T15:19:04.338943",
     "channel": "facts",
     "language": "tr",
