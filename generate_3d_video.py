@@ -194,68 +194,137 @@ def append_log(channel, lang, format_type, video_url=None, error=None):
     with open("data/logs.json", "w", encoding="utf-8") as f:
         json.dump(logs, f, indent=2, ensure_ascii=False)
 
-def download_3d_video(prompt: str, index: int, api_key: str) -> str:
-    """Queries Pollinations AI Video Generation API to produce a 3D moving video clip"""
+def download_3d_video(prompt: str, index: int, api_keys_list: list) -> str:
+    """Queries Pollinations AI Video Generation API using roaming models and keys, or animates still images with cinematic 3D pan."""
     os.makedirs("temp_assets", exist_ok=True)
     file_path = f"temp_assets/3d_vid_{index}.mp4"
     
-    # Master-Level 3D Styling Prompt with high-quality movement, dynamic environment, and talking details
+    # 3D visuals styling
     enhanced_prompt = f"3D CGI animation, Pixar Disney style, fluid physics motion, vibrant colors, cinematic studio lighting, masterpiece, 8k resolution, {prompt}"
-    print(f"[3D Visual Agent] Rendering scene {index} with prompt: {enhanced_prompt[:100]}...")
-    
     safe_prompt = urllib.parse.quote(enhanced_prompt)
-    url = f"https://gen.pollinations.ai/video/{safe_prompt}?key={api_key}"
     
+    # Models to roam in order of preference
+    video_models = ["p-video", "wan-fast", "veo", "seedance-2.0", "ltx-2", "grok-video-pro", "nova-reel"]
+    
+    from moviepy.config import get_setting
+    try:
+        ffmpeg_binary = get_setting("FFMPEG_BINARY")
+    except Exception:
+        ffmpeg_binary = "ffmpeg"
+
     import time
-    for attempt in range(4):
+    
+    # Attempt 1: Try true video generation with roaming keys and video models
+    print(f"[3D Visual Agent] Scene {index}: Trying active video generation across {len(api_keys_list)} keys...")
+    for key in api_keys_list:
+        if not key:
+            continue
+        for model in video_models:
+            url = f"https://gen.pollinations.ai/video/{safe_prompt}?key={key}&model={model}"
+            print(f"[3D Visual Agent] -> Querying video model '{model}' with key '{key[:8]}...'")
+            try:
+                response = requests.get(url, timeout=120)
+                if response.status_code == 200:
+                    content = response.content
+                    # Ensure we didn't get JSON error (e.g. insufficient credits)
+                    if not (content.startswith(b'{"success":false') or content.startswith(b'{"error"')):
+                        # Ensure it's not a still JPEG fallback
+                        if not content.startswith(b'\xff\xd8\xff'):
+                            with open(file_path, 'wb') as f:
+                                f.write(content)
+                            print(f"[3D Visual Agent] 🟢 Successfully generated REAL 3D MP4 video using model '{model}'!")
+                            return file_path
+                        else:
+                            print(f"[3D Visual Agent] Model '{model}' returned a still JPEG. Checking next candidate...")
+                    else:
+                        print(f"[3D Visual Agent] Model '{model}' returned error: {content[:120]}")
+                elif response.status_code == 402:
+                    print(f"[3D Visual Agent] Model '{model}' reported Insufficient Balance (402).")
+                else:
+                    print(f"[3D Visual Agent] Model '{model}' failed with status {response.status_code}")
+            except Exception as e:
+                print(f"[3D Visual Agent] Connection error with model '{model}': {e}")
+            time.sleep(2)
+
+    # Attempt 2: Ultimate Free Fallback - Generate ultra-quality 3D still image and animate dynamically
+    print(f"[3D Visual Agent] Scene {index}: Falling back to Cinematic 3D Camera-Motion Engine (100% Free & Guaranteed Motion)...")
+    img_path = f"temp_assets/3d_img_{index}.jpg"
+    img_success = False
+    
+    # Roam keys to get the image
+    for key in api_keys_list:
+        if not key:
+            continue
+        # Use high quality flux model to produce gorgeous 3D Pixar render
+        img_url = f"https://image.pollinations.ai/prompt/{safe_prompt}?width=1080&height=1920&nologo=true&model=flux&key={key}"
+        print(f"[3D Visual Agent] -> Fetching premium 3D image using key '{key[:8]}...'")
         try:
-            # Video generation GET request is synchronous and blocks until fully rendered
-            response = requests.get(url, timeout=180)
-            if response.status_code == 200:
-                content = response.content
-                # Robust validation of returned media
-                if content.startswith(b'{"success":false') or content.startswith(b'{"error"'):
-                    print(f"[3D Visual Agent] ⚠️ API returned JSON error: {content[:100]}")
-                    return None
-                
-                # If Pollinations fell back to a still image, automatically animate it!
-                if content.startswith(b'\xff\xd8\xff'):
-                    print(f"[3D Visual Agent] ℹ️ API returned a still 3D image (fallback). Animating into 3D moving video...")
-                    img_path = f"temp_assets/3d_img_{index}.jpg"
-                    with open(img_path, 'wb') as f:
-                        f.write(content)
-                    
-                    # Convert to cinematic zoompan video using FFmpeg
-                    import subprocess
-                    try:
-                        # 30 fps vertical MP4 with zoom-in effect (smooth camera slide)
-                        subprocess.run([
-                            "ffmpeg", "-y", "-loop", "1", "-i", img_path, "-c:v", "libx264", "-t", "10",
-                            "-pix_fmt", "yuv420p", 
-                            "-vf", "zoompan=z='min(zoom+0.0015,1.5)':d=250:s=1080x1920:x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)'", 
-                            file_path
-                        ], check=True, capture_output=True)
-                        print(f"[3D Visual Agent] 🟢 Successfully animated still image into video!")
-                        return file_path
-                    except Exception as ffmpeg_err:
-                        print(f"[3D Visual Agent] ⚠️ FFmpeg zoompan failed: {ffmpeg_err}. Scaling simply...")
-                        subprocess.run([
-                            "ffmpeg", "-y", "-loop", "1", "-i", img_path, "-c:v", "libx264", "-t", "10",
-                            "-pix_fmt", "yuv420p", "-vf", "scale=1080:1920", file_path
-                        ], check=False, capture_output=True)
-                        return file_path
-                
-                # Real MP4 video returned!
-                with open(file_path, 'wb') as f:
-                    f.write(content)
-                print(f"[3D Visual Agent] 🟢 Successfully downloaded 3D MP4 video!")
-                return file_path
-            else:
-                print(f"[3D Visual Agent] API returned status code {response.status_code} (attempt {attempt+1})")
+            img_res = requests.get(img_url, timeout=60)
+            if img_res.status_code == 200 and img_res.content.startswith(b'\xff\xd8\xff'):
+                with open(img_path, 'wb') as f:
+                    f.write(img_res.content)
+                img_success = True
+                print(f"[3D Visual Agent] 🟢 Successfully downloaded high-fidelity 3D visual!")
+                break
         except Exception as e:
-            print(f"[3D Visual Agent] ⚠️ Connection failed (attempt {attempt+1}): {e}")
-        time.sleep(5)
+            print(f"[3D Visual Agent] Image fetch error: {e}")
+            
+    if not img_success:
+        # Absolute fallback without key if all failed
+        print(f"[3D Visual Agent] -> Fetching image using public endpoint...")
+        try:
+            img_url = f"https://image.pollinations.ai/prompt/{safe_prompt}?width=1080&height=1920&nologo=true&model=flux"
+            img_res = requests.get(img_url, timeout=60)
+            if img_res.status_code == 200:
+                with open(img_path, 'wb') as f:
+                    f.write(img_res.content)
+                img_success = True
+        except Exception as e:
+            print(f"[3D Visual Agent] Public image fetch failed: {e}")
+
+    if img_success:
+        # Animate the image using our advanced, buttery-smooth cinematic orbit-pan formula
+        import subprocess
+        print(f"[3D Visual Agent] Animating 3D visual using cinematic tracking shot...")
+        
+        # Jitter-free high-res pre-scaling with organic camera pans & zoom breaths
+        filter_str = (
+            "scale=4000:7111,"
+            "zoompan=z='1.15+0.1*sin(on/100)':"
+            "x='(iw-iw/zoom)*(0.5+0.25*sin(on/80))':"
+            "y='(ih-ih/zoom)*(0.5+0.2*cos(on/100))':"
+            "d=250:s=1080x1920:fps=30"
+        )
+        
+        cmd = [
+            ffmpeg_binary, "-y",
+            "-loop", "1",
+            "-i", img_path,
+            "-vf", filter_str,
+            "-t", "8.3",
+            "-c:v", "libx264",
+            "-pix_fmt", "yuv420p",
+            file_path
+        ]
+        
+        try:
+            subprocess.run(cmd, check=True, capture_output=True)
+            print(f"[3D Visual Agent] 🟢 Successfully animated still image into 3D tracked clip!")
+            return file_path
+        except Exception as ffmpeg_err:
+            print(f"[3D Visual Agent] ⚠️ Advanced pan failed: {ffmpeg_err}. Applying fallback pan...")
+            # Fallback simple scale-pan
+            try:
+                subprocess.run([
+                    ffmpeg_binary, "-y", "-loop", "1", "-i", img_path, "-c:v", "libx264", "-t", "8",
+                    "-pix_fmt", "yuv420p", "-vf", "scale=1080:1920", file_path
+                ], check=True, capture_output=True)
+                return file_path
+            except:
+                pass
+                
     return None
+
 
 def main():
     print("=== Nexus 3D Video Generator MVP Starting ===")
@@ -281,6 +350,8 @@ def main():
         return
         
     api_keys = [k.strip() for k in GEMINI_API_KEY.split(",") if k.strip()]
+    pollinations_keys = [k.strip() for k in POLLINATIONS_API_KEY.split(",") if k.strip()]
+
     
     # 1. Select absurd topic
     topic = "havuçtan ceket giyen ve konuşan adam modern aydınlık bir evde"
@@ -434,7 +505,7 @@ def main():
         
         # B. 3D Video Clip Generation
         visual_prompt = scene.get("visual_prompt", "A 3D character wearing a carrot jacket")
-        clip_path = download_3d_video(visual_prompt, idx, POLLINATIONS_API_KEY)
+        clip_path = download_3d_video(visual_prompt, idx, pollinations_keys)
         if clip_path:
             video_clips.append(clip_path)
         else:
