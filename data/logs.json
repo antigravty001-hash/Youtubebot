@@ -1,5 +1,14 @@
 [
   {
+    "timestamp": "2026-05-26T19:08:45.337049",
+    "channel": "facts",
+    "language": "tr",
+    "format": "shorts",
+    "status": "success",
+    "video_url": "local_inspect_only",
+    "error_message": null
+  },
+  {
     "timestamp": "2026-05-26T18:28:42.927208",
     "channel": "facts",
     "language": "tr",
