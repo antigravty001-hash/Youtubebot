@@ -1,5 +1,14 @@
 [
   {
+    "timestamp": "2026-05-27T04:22:53.987677",
+    "channel": "facts",
+    "language": "tr",
+    "format": "shorts",
+    "status": "error",
+    "video_url": null,
+    "error_message": "name 'os' is not defined"
+  },
+  {
     "timestamp": "2026-05-26T23:55:05.307791",
     "channel": "facts",
     "language": "tr",
