@@ -1,5 +1,14 @@
 [
   {
+    "timestamp": "2026-05-28T18:46:11.653822",
+    "channel": "facts",
+    "language": "tr",
+    "format": "shorts",
+    "status": "success",
+    "video_url": "https://youtube.com/watch?v=DSgieuODRvA",
+    "error_message": null
+  },
+  {
     "timestamp": "2026-05-28T14:05:17.475624",
     "channel": "facts",
     "language": "tr",
@@ -439,14 +448,5 @@
     "status": "error",
     "video_url": null,
     "error_message": "[Errno 2] No such file or directory: 'temp_assets/voice_facts_tr_0.mp3'"
-  },
-  {
-    "timestamp": "2026-05-25T09:42:32.914724",
-    "channel": "kids",
-    "language": "tr",
-    "format": "shorts",
-    "status": "error",
-    "video_url": null,
-    "error_message": "[Errno 2] No such file or directory: 'temp_assets/voice_kids_tr_0.mp3'"
   }
 ]
