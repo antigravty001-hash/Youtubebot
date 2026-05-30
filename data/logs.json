@@ -1,5 +1,14 @@
 [
   {
+    "timestamp": "2026-05-30T18:28:41.961296",
+    "channel": "facts",
+    "language": "tr",
+    "format": "shorts",
+    "status": "error",
+    "video_url": null,
+    "error_message": "name 'os' is not defined"
+  },
+  {
     "timestamp": "2026-05-30T14:54:15.319024",
     "channel": "facts",
     "language": "tr",
@@ -439,14 +448,5 @@
     "status": "error",
     "video_url": null,
     "error_message": "Gemini API failed to generate script. Aborting production to prevent dummy video upload."
-  },
-  {
-    "timestamp": "2026-05-25T19:20:40.179485",
-    "channel": "facts",
-    "language": "en",
-    "format": "shorts",
-    "status": "error",
-    "video_url": null,
-    "error_message": null
   }
 ]
