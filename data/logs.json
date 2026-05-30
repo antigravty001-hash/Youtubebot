@@ -1,5 +1,14 @@
 [
   {
+    "timestamp": "2026-05-30T04:23:02.972672",
+    "channel": "facts",
+    "language": "tr",
+    "format": "shorts",
+    "status": "error",
+    "video_url": null,
+    "error_message": "name 'os' is not defined"
+  },
+  {
     "timestamp": "2026-05-29T23:40:10.127007",
     "channel": "facts",
     "language": "tr",
@@ -435,15 +444,6 @@
     "timestamp": "2026-05-25T17:27:23.044606",
     "channel": "kids",
     "language": "tr",
-    "format": "shorts",
-    "status": "error",
-    "video_url": null,
-    "error_message": "max() iterable argument is empty"
-  },
-  {
-    "timestamp": "2026-05-25T17:21:52.125161",
-    "channel": "facts",
-    "language": "en",
     "format": "shorts",
     "status": "error",
     "video_url": null,
