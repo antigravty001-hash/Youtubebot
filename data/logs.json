@@ -1,5 +1,14 @@
 [
   {
+    "timestamp": "2026-05-31T23:40:12.409989",
+    "channel": "facts",
+    "language": "tr",
+    "format": "shorts",
+    "status": "error",
+    "video_url": null,
+    "error_message": "name 'os' is not defined"
+  },
+  {
     "timestamp": "2026-05-31T21:38:24.614741",
     "channel": "facts",
     "language": "tr",
@@ -439,14 +448,5 @@
     "status": "error",
     "video_url": null,
     "error_message": null
-  },
-  {
-    "timestamp": "2026-05-26T00:36:15.406291",
-    "channel": "facts",
-    "language": "en",
-    "format": "shorts",
-    "status": "error",
-    "video_url": null,
-    "error_message": "Attribute 'duration' not set"
   }
 ]
