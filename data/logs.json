@@ -1,5 +1,14 @@
 [
   {
+    "timestamp": "2026-05-31T15:18:24.805326",
+    "channel": "facts",
+    "language": "tr",
+    "format": "shorts",
+    "status": "success",
+    "video_url": "https://youtube.com/watch?v=WnYEN23hiA4",
+    "error_message": null
+  },
+  {
     "timestamp": "2026-05-31T14:19:02.274870",
     "channel": "facts",
     "language": "tr",
@@ -439,14 +448,5 @@
     "status": "error",
     "video_url": null,
     "error_message": "Attribute 'duration' not set"
-  },
-  {
-    "timestamp": "2026-05-26T03:10:28.307692",
-    "channel": "facts",
-    "language": "en",
-    "format": "shorts",
-    "status": "error",
-    "video_url": null,
-    "error_message": "All Gemini models on ALL API keys failed. Check API key quotas or add more keys."
   }
 ]
