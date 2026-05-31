@@ -1,5 +1,14 @@
 [
   {
+    "timestamp": "2026-05-31T08:43:34.833302",
+    "channel": "facts",
+    "language": "tr",
+    "format": "shorts",
+    "status": "success",
+    "video_url": "https://youtube.com/watch?v=Z5TXGGtqUr0",
+    "error_message": null
+  },
+  {
     "timestamp": "2026-05-31T04:22:42.783770",
     "channel": "facts",
     "language": "tr",
@@ -439,14 +448,5 @@
     "status": "error",
     "video_url": null,
     "error_message": "All Gemini models failed. Check API key quotas."
-  },
-  {
-    "timestamp": "2026-05-25T23:47:03.621671",
-    "channel": "facts",
-    "language": "en",
-    "format": "shorts",
-    "status": "error",
-    "video_url": null,
-    "error_message": "Gemini API failed to generate script. Aborting production to prevent dummy video upload."
   }
 ]
