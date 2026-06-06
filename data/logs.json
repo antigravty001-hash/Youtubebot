@@ -1,5 +1,14 @@
 [
   {
+    "timestamp": "2026-06-06T21:53:05.989180",
+    "channel": "facts",
+    "language": "tr",
+    "format": "shorts",
+    "status": "success",
+    "video_url": "https://youtube.com/watch?v=B2sdnRNvTM8",
+    "error_message": null
+  },
+  {
     "timestamp": "2026-06-06T18:42:16.592097",
     "channel": "facts",
     "language": "tr",
@@ -439,14 +448,5 @@
     "status": "success",
     "video_url": "https://youtube.com/watch?v=ZBEfjTgn6rk",
     "error_message": null
-  },
-  {
-    "timestamp": "2026-05-31T09:08:05.074871",
-    "channel": "facts",
-    "language": "tr",
-    "format": "shorts",
-    "status": "error",
-    "video_url": null,
-    "error_message": "503, message='Invalid response status', url='wss://speech.platform.bing.com/consumer/speech/synthesize/readaloud/edge/v1?TrustedClientToken=6A5AA1D4EAFF4E9FB37E23D68491D6F4&ConnectionId=4fc2f06e1ab9433e975c57a3dbf13801&Sec-MS-GEC=680D31F6F1236395E3934F816913CC630CE3465C24D67D7E2DE6D94BDDDE7A08&Sec-MS-GEC-Version=1-143.0.3650.75'"
   }
 ]
