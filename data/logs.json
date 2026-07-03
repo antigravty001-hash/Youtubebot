@@ -1,5 +1,14 @@
 [
   {
+    "timestamp": "2026-07-03T05:54:25.394539",
+    "channel": "facts",
+    "language": "tr",
+    "format": "shorts",
+    "status": "error",
+    "video_url": null,
+    "error_message": "name 'os' is not defined"
+  },
+  {
     "timestamp": "2026-07-03T04:22:50.560040",
     "channel": "facts",
     "language": "tr",
@@ -438,15 +447,6 @@
     "format": "shorts",
     "status": "success",
     "video_url": "https://youtube.com/watch?v=QrJY2W89kWg",
-    "error_message": null
-  },
-  {
-    "timestamp": "2026-06-28T12:38:23.122737",
-    "channel": "facts",
-    "language": "tr",
-    "format": "shorts",
-    "status": "success",
-    "video_url": "https://youtube.com/watch?v=f4cpHJTg9CY",
     "error_message": null
   }
 ]
