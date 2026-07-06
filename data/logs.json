@@ -1,5 +1,14 @@
 [
   {
+    "timestamp": "2026-07-06T23:18:56.124834",
+    "channel": "facts",
+    "language": "tr",
+    "format": "shorts",
+    "status": "success",
+    "video_url": "https://youtube.com/watch?v=6OM-2nR5un4",
+    "error_message": null
+  },
+  {
     "timestamp": "2026-07-06T20:08:47.138793",
     "channel": "facts",
     "language": "tr",
@@ -438,15 +447,6 @@
     "format": "shorts",
     "status": "success",
     "video_url": "https://youtube.com/watch?v=TDOnkX-uLns",
-    "error_message": null
-  },
-  {
-    "timestamp": "2026-07-02T14:16:30.490713",
-    "channel": "facts",
-    "language": "tr",
-    "format": "shorts",
-    "status": "success",
-    "video_url": "https://youtube.com/watch?v=eIMChnz0C00",
     "error_message": null
   }
 ]
