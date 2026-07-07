@@ -1,6 +1,7 @@
 import google.generativeai as genai
 import json
 import random
+import os
 from config.settings import GEMINI_API_KEY
 
 class WriterAgent:
