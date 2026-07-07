@@ -81,7 +81,7 @@ class WriterAgent:
         ═══════════════════════════════════════════
 
         CRITICAL SCRIPTING RULES:
-        1. HOOK: Start with the second half of the loop sentence, then immediately hit with an extreme, unsettling hook.
+        1. HOOK (FIRST 3 SECONDS): Start with the second half of the loop sentence, then IMMEDIATELY hit with an extreme, shocking, and unsettling hook. (e.g. "They don't want you to know this...", "The terrifying truth about...", "This footage was hidden for 50 years..."). The first 3 seconds are vital for retention!
         2. FACTS: You MUST include exactly 3 to 4 distinct, mind-blowing, highly secretive hidden facts. Frame them as 'Top Secret', 'Highly Classified', or 'Knowledge they tried to hide from you'. Do NOT just give general information.
         3. TONE: Dark, mysterious, serious, and deeply engaging. It must feel like exposing a grand conspiracy.
         4. SUBSCRIBE CTA: Place a compelling subscribe call in the SECOND TO LAST scene (NOT the last scene).

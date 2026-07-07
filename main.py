@@ -61,7 +61,7 @@ def produce_video(channel_type: str, language: str, format_type: str, dry_run: b
     # 1. Research / Topic Selection
     print("1. Determining topic...")
     
-    # --- NEWS-JACKER: Auto-activate on 5th video of the day ---
+    # --- NEWS-JACKER: Auto-activate 50% of the time (every 2nd video) ---
     today_video_count = 0
     try:
         with open("data/logs.json", "r", encoding="utf-8") as f:
@@ -76,7 +76,7 @@ def produce_video(channel_type: str, language: str, format_type: str, dry_run: b
     except Exception:
         pass
     
-    use_news_mode = (today_video_count >= 4)  # 5th video (0-indexed: 0,1,2,3 done = this is #5)
+    use_news_mode = (today_video_count % 2 == 1)  # Every 2nd video of the day uses News-Jacker
     
     if topic_setting == "auto":
         from agents.data_scientist_agent import DataScientistAgent
