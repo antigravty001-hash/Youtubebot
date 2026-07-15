@@ -1,5 +1,14 @@
 [
   {
+    "timestamp": "2026-07-15T18:29:04.278113",
+    "channel": "facts",
+    "language": "tr",
+    "format": "shorts",
+    "status": "error",
+    "video_url": null,
+    "error_message": "No audio was received. Please verify that your parameters are correct."
+  },
+  {
     "timestamp": "2026-07-15T15:39:07.304096",
     "channel": "facts",
     "language": "tr",
@@ -438,15 +447,6 @@
     "format": "shorts",
     "status": "success",
     "video_url": "https://youtube.com/watch?v=6kHYvT5sPp0",
-    "error_message": null
-  },
-  {
-    "timestamp": "2026-07-11T12:38:59.914605",
-    "channel": "facts",
-    "language": "tr",
-    "format": "shorts",
-    "status": "success",
-    "video_url": "https://youtube.com/watch?v=GZLX42s7Zxg",
     "error_message": null
   }
 ]
