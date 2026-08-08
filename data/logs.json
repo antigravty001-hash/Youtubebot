@@ -1,5 +1,14 @@
 [
   {
+    "timestamp": "2026-08-08T14:18:00.939150",
+    "channel": "facts",
+    "language": "tr",
+    "format": "shorts",
+    "status": "success",
+    "video_url": "https://youtube.com/watch?v=joUI9K0iIWg",
+    "error_message": null
+  },
+  {
     "timestamp": "2026-08-08T12:37:28.529069",
     "channel": "facts",
     "language": "tr",
@@ -439,14 +448,5 @@
     "status": "success",
     "video_url": "https://youtube.com/watch?v=LuDudKn2hog",
     "error_message": null
-  },
-  {
-    "timestamp": "2026-08-03T23:40:29.761235",
-    "channel": "facts",
-    "language": "tr",
-    "format": "shorts",
-    "status": "error",
-    "video_url": null,
-    "error_message": "All scriptwriter APIs (Gemini, Groq, OpenRouter) failed. Check quotas or key definitions."
   }
 ]
