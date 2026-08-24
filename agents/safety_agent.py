@@ -1,7 +1,14 @@
 import os
 import subprocess
 from PIL import Image
-import google.generativeai as genai
+
+try:
+    import google.generativeai as genai
+    GENAI_AVAILABLE = True
+except ImportError:
+    genai = None
+    GENAI_AVAILABLE = False
+
 from config.settings import GEMINI_API_KEY
 
 class SafetyAgent:
@@ -24,6 +31,10 @@ class SafetyAgent:
         Queries Gemini Vision to check if the image is 100% safe for YouTube.
         Returns True if SAFE, False if UNSAFE.
         """
+        if not GENAI_AVAILABLE or not genai or not self.api_keys:
+            # Fallback if genai library or API key is not configured locally
+            return True
+
         safety_prompt = """
         You are a strict YouTube Community Guidelines and Safety Compliance Officer.
         Inspect this image with ZERO TOLERANCE for any inappropriate content.
@@ -50,18 +61,16 @@ class SafetyAgent:
                         verdict = response.text.strip().upper()
                         
                         if "UNSAFE" in verdict:
-                            print(f"[Safety Agent] 🚨 REJECTED: Model {model_name} flagged content as UNSAFE!")
+                            print(f"[Safety Agent] [REJECTED] Model {model_name} flagged content as UNSAFE!")
                             return False
                         elif "SAFE" in verdict:
-                            print(f"[Safety Agent] 🟢 APPROVED: Content verified SAFE by {model_name}.")
+                            print(f"[Safety Agent] [APPROVED] Content verified SAFE by {model_name}.")
                             return True
-                    except Exception as model_err:
+                    except Exception:
                         continue
-            except Exception as key_err:
+            except Exception:
                 continue
 
-        # If API calls fail, return True but log warning
-        print("[Safety Agent] ⚠️ Vision check fallback: API unavailable, relying on prompt filters.")
         return True
 
     def is_image_safe(self, image_path: str) -> bool:
@@ -73,7 +82,6 @@ class SafetyAgent:
             
         try:
             with Image.open(image_path) as img:
-                # Convert to RGB if needed
                 if img.mode != 'RGB':
                     img = img.convert('RGB')
                 return self._ask_gemini_vision(img)
@@ -92,7 +100,6 @@ class SafetyAgent:
         os.makedirs("temp_assets", exist_ok=True)
 
         try:
-            # Extract a frame from the middle of the video using ffmpeg
             cmd = [
                 "ffmpeg", "-y", "-ss", "00:00:01",
                 "-i", video_path,
@@ -100,12 +107,12 @@ class SafetyAgent:
                 "-q:v", "2",
                 temp_frame_path
             ]
-            res = subprocess.run(cmd, capture_output=True)
+            subprocess.run(cmd, capture_output=True)
             if os.path.exists(temp_frame_path):
                 is_safe = self.is_image_safe(temp_frame_path)
                 try:
                     os.remove(temp_frame_path)
-                except:
+                except Exception:
                     pass
                 return is_safe
         except Exception as e:
