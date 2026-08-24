@@ -7,3 +7,6 @@ client_secrets.json
 şifre.txt
 *.txt
 !requirements.txt
+*.mp4
+test*
+out.*

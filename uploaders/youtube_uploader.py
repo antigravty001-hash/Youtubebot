@@ -7,7 +7,8 @@ from config.settings import CHANNELS
 
 class YouTubeUploader:
     def __init__(self):
-        pass
+        # Default to 'unlisted' to protect the channel from automated strikes
+        self.privacy_status = os.environ.get("YOUTUBE_PRIVACY_STATUS", "unlisted")
 
     def get_service(self, channel_type: str):
         creds_data = CHANNELS[channel_type]
@@ -36,7 +37,7 @@ class YouTubeUploader:
                 'categoryId': CHANNELS[channel_type]["category_id"]
             },
             'status': {
-                'privacyStatus': 'public',
+                'privacyStatus': self.privacy_status, # 'unlisted' protects channel against sudden community strikes
                 'selfDeclaredMadeForKids': CHANNELS[channel_type]["made_for_kids"]
             }
         }
@@ -49,7 +50,7 @@ class YouTubeUploader:
                 media_body=media
             )
             response = request.execute()
-            print(f"✅ Video Uploaded: https://youtube.com/watch?v={response['id']}")
+            print(f"✅ Video Uploaded ({self.privacy_status.upper()}): https://youtube.com/watch?v={response['id']}")
             return response['id']
         except Exception as e:
             print(f"❌ Upload failed: {e}")

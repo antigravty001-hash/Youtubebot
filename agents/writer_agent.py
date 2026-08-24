@@ -7,7 +7,7 @@ from config.settings import GEMINI_API_KEY
 class WriterAgent:
     def __init__(self):
         self.models_to_try = [
-            'gemini-2.5-flash',     # Works for user, 20/day limit per key
+            'gemini-2.5-flash',
             'gemini-2.0-flash-lite',
             'gemini-1.5-flash-002',
             'gemini-1.5-flash',
@@ -22,7 +22,6 @@ class WriterAgent:
 
     def _get_working_model(self):
         """Finds and returns the first working Gemini model using multiple API keys"""
-        # Shuffle keys to distribute load if multiple are provided
         keys_to_try = list(self.api_keys)
         random.shuffle(keys_to_try)
         
@@ -34,7 +33,6 @@ class WriterAgent:
                 try:
                     print(f"  -> Testing model: {model_name}...")
                     model = genai.GenerativeModel(model_name)
-                    # Quick test
                     model.generate_content("test")
                     print(f"[Writer Agent] 🟢 Successfully connected to {model_name} with this key!")
                     return model
@@ -82,27 +80,23 @@ class WriterAgent:
         ═══════════════════════════════════════════
 
         CRITICAL SCRIPTING RULES:
-        1. HOOK (FIRST 3 SECONDS): Start with the second half of the loop sentence, then IMMEDIATELY hit with an extreme, shocking, and unsettling hook. (e.g. "They don't want you to know this...", "The terrifying truth about...", "This footage was hidden for 50 years..."). The first 3 seconds are vital for retention!
-        2. FACTS: You MUST include exactly 3 to 4 distinct, mind-blowing, highly secretive hidden facts. Frame them as 'Top Secret', 'Highly Classified', or 'Knowledge they tried to hide from you'. Do NOT just give general information.
-        3. TONE: Dark, mysterious, serious, and deeply engaging. It must feel like exposing a grand conspiracy.
+        1. HOOK (FIRST 3 SECONDS): Start with the second half of the loop sentence, then IMMEDIATELY hit with an extreme, shocking, and unsettling hook.
+        2. FACTS: Include exactly 3 to 4 distinct, mind-blowing, highly secretive hidden facts. Frame them as 'Top Secret', 'Highly Classified', or 'Knowledge they tried to hide from you'.
+        3. TONE: Dark, mysterious, serious, and deeply engaging.
         4. SUBSCRIBE CTA: Place a compelling subscribe call in the SECOND TO LAST scene (NOT the last scene).
         5. LOOP ENDING: The LAST scene must end with an unfinished sentence that feeds back into the first scene's hook.
         
-        SUBTLE ENGAGEMENT EASTER EGG:
-        In exactly ONE of the scenes' visual_prompt, hide a VERY subtle anachronism that only eagle-eyed 
-        viewers would notice (e.g., a barely visible modern object in a historical setting, or a shadow 
-        that doesn't match). This must be EXTREMELY subtle — do NOT mention it in the voiceover. 
-        It is a secret visual detail for curious viewers who will comment about it.
-        
+        ═══════════════════════════════════════════
+        STRICT YOUTUBE SAFETY & ZERO NSFW POLICY (VITAL):
+        ═══════════════════════════════════════════
+        - Visual prompts MUST NEVER depict any nudity, bare skin, lingerie, underwear, bathing, unclothed bodies, sensual postures, or anatomical figures.
+        - Any human character mentioned in a visual_prompt MUST be explicitly described as FULLY CLOTHED in dark coats, heavy jackets, hazmat suits, robes, or vintage formal suits.
+        - PREFER visual prompts focusing on mysterious landscapes, ancient ruins, space phenomena, classified documents, vintage vehicles, celestial bodies, and architectural environments over human bodies.
+        - Every single 'visual_prompt' MUST end with: ", fully clothed, safe for work, dark cinematic, 8k resolution, documentary footage"
+        ═══════════════════════════════════════════
+
         CRITICAL TTS RULE: The 'voiceover_text' MUST be plain, grammatically correct text. DO NOT use emojis. DO NOT use sound effects like "şşş", "hmm". Just use plain words.
 
-        CRITICAL VISUAL PROMPT RULE (HYPER-REALISM):
-        The AI image generator must create stunning, terrifying, and awe-inspiring images. You CANNOT use simple prompts like "Space" or "A star".
-        Your 'visual_prompt' MUST be highly descriptive, English only, and MUST include these style keywords: 
-        ", dark cinematic, hyper-realistic, 8k resolution, Unreal Engine 5 render, highly detailed, atmospheric lighting, masterpiece, documentary footage"
-        
-        Example Good Visual Prompt: "A massive, terrifying black hole consuming a dying star, dark cinematic, hyper-realistic, 8k resolution, Unreal Engine 5 render, highly detailed, atmospheric lighting, masterpiece"
-        
         You MUST respond ONLY with a valid JSON object. Do not use markdown code blocks like ```json.
         Format:
         {{
@@ -111,7 +105,7 @@ class WriterAgent:
             "tags": ["mystery", "space", "scary", "facts", "unknown"],
             "scenes": [
                 {{
-                    "visual_prompt": "Highly detailed English prompt with 8K UE5 keywords",
+                    "visual_prompt": "Highly detailed English prompt ending with safety and 8K UE5 keywords",
                     "voiceover_text": "The exact text to be spoken by the narrator"
                 }},
                 ...

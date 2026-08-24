@@ -199,8 +199,8 @@ def download_3d_video(prompt: str, index: int, api_keys_list: list, seed: int = 
     os.makedirs("temp_assets", exist_ok=True)
     file_path = f"temp_assets/3d_vid_{index}.mp4"
     
-    # 3D visuals styling
-    enhanced_prompt = f"3D CGI animation, Pixar Disney style, fluid physics motion, vibrant colors, cinematic studio lighting, masterpiece, 8k resolution, {prompt}"
+    # 3D visuals styling with strict SFW safety
+    enhanced_prompt = f"3D CGI animation, Pixar Disney style, fluid physics motion, vibrant colors, cinematic studio lighting, strictly safe for work, fully clothed, no nudity, no bare skin, family safe, 8k resolution, {prompt}"
     safe_prompt = urllib.parse.quote(enhanced_prompt)
     
     # Models to roam in order of preference
@@ -258,7 +258,7 @@ def download_3d_video(prompt: str, index: int, api_keys_list: list, seed: int = 
         if not key:
             continue
         # Use high quality flux model to produce gorgeous 3D Pixar render
-        img_url = f"https://image.pollinations.ai/prompt/{safe_prompt}?width=1080&height=1920&nologo=true&model=flux&key={key}"
+        img_url = f"https://image.pollinations.ai/prompt/{safe_prompt}?width=1080&height=1920&nologo=true&model=flux&safe=true&key={key}"
         if seed is not None:
             img_url += f"&seed={seed}"
         print(f"[3D Visual Agent] -> Fetching premium 3D image using key '{key[:8]}...'")
@@ -277,7 +277,7 @@ def download_3d_video(prompt: str, index: int, api_keys_list: list, seed: int = 
         # Absolute fallback without key if all failed
         print(f"[3D Visual Agent] -> Fetching image using public endpoint...")
         try:
-            img_url = f"https://image.pollinations.ai/prompt/{safe_prompt}?width=1080&height=1920&nologo=true&model=flux"
+            img_url = f"https://image.pollinations.ai/prompt/{safe_prompt}?width=1080&height=1920&nologo=true&model=flux&safe=true"
             if seed is not None:
                 img_url += f"&seed={seed}"
             img_res = requests.get(img_url, timeout=60)
