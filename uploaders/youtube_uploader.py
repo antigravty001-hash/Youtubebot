@@ -54,8 +54,6 @@ class YouTubeUploader:
             return response['id']
         except Exception as e:
             print(f"❌ Upload failed: {e}")
-            if "403" in str(e) or "forbidden" in str(e).lower():
-                print("💡 [DIAGNOSTIC] 403 Forbidden usually means: 1) The channel received a Community Guideline Strike and is under a 1-2 week temporary upload suspension by YouTube, OR 2) The OAuth token has expired/been revoked in Google Cloud Console.")
             return None
 
     def set_thumbnail(self, video_id: str, thumbnail_path: str, channel_type: str):
